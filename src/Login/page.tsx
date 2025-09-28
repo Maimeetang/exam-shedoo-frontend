@@ -1,9 +1,7 @@
-"use client";
+import Link from "next/link";
 
 export default function Login() {
-  function CMULogin() {
-    console.log("log in!!!");
-  }
+  const CmuentraidURL = process.env.CMU_ENTRAID_URL as string;
 
   return (
     <div className="flex items-center justify-center h-screen bg-[url(/background/login.png)] bg-cover bg-center">
@@ -18,14 +16,11 @@ export default function Login() {
                 sign in or create account to get started
               </p>
             </div>
-            <button
-              className="mt-10 cursor-pointer"
-              onClick={() => {
-                CMULogin();
-              }}
-            >
-              <img className="w-72" src="/buttons/cmu-login.png" alt="icon" />
-            </button>
+            <Link href={`${CmuentraidURL}`}>
+              <button className="mt-10 cursor-pointer">
+                <img className="w-72" src="/buttons/cmu-login.png" alt="icon" />
+              </button>
+            </Link>
           </div>
           <p className="justify-self-end my-10 paragraph-black">
             © 2025 Full Stack Group 10. All Rights Reserved.
