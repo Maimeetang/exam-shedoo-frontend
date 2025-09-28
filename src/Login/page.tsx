@@ -33,7 +33,7 @@ export default function Login() {
         </div>
 
         {/* ฝั่งขวา */}
-        <div className="flex bg-[#AF9CAF]">
+        <div className="flex bg-[url(/background/login2.jpeg)] bg-cover bg-center">
           <div className="mt-5 ml-5">
             <h1 className="mb-2 heading-white font-bold">Schedoo</h1>
             <p className="w-2/3 paragraph-white">
