@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 
 export default function Navbar({ userName }: { userName: string }) {
@@ -39,9 +40,11 @@ export default function Navbar({ userName }: { userName: string }) {
             <button className="w-full text-left px-4 py-2 textbutton hover:bg-gray-200 cursor-pointer">
               Login Admin
             </button>
-            <button className="w-full text-left px-4 py-2 textbutton hover:bg-gray-200 cursor-pointer">
-              log out
-            </button>
+            <Link href="/logout">
+              <button className="w-full text-left px-4 py-2 textbutton hover:bg-gray-200 cursor-pointer">
+                log out
+              </button>
+            </Link>
           </div>
         )}
       </div>
