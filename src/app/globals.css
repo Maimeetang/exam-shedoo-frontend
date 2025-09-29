@@ -21,3 +21,7 @@ body {
 .paragraph-white {
   @apply text-base text-white font-light;
 }
+
+.textbutton {
+  @apply text-base text-[#2F6081] font-medium underline;
+}
