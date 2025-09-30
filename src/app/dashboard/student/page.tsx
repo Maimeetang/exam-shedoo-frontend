@@ -1,16 +1,18 @@
 "use client";
 import Navbar from "@/component/Navbar";
 import Spinner from "@/component/Spinner";
-import { Enrollment } from "@/types/Enrollment";
 import { Profile } from "@/types/Profile";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Layout } from "antd";
+import StudentCourseList from "@/component/dashboard/StudentCourseList";
 
-export default function StudentDashboard() {
+const { Content, Footer } = Layout;
+
+const StudentDashboard: React.FC = () => {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -28,30 +30,25 @@ export default function StudentDashboard() {
       });
   }, []);
 
-  useEffect(() => {
-    if (!profile?.student_id) return;
-    axios
-      .get<Enrollment[]>(`/api/students/enrollments/${profile?.student_id}`)
-      .then((res) => {
-        setEnrollments(res.data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, [profile]);
-
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="p-3">Error: {error}</div>;
   }
 
   if (!profile) return <Spinner />;
 
   return (
-    <>
+    <Layout className="flex flex-col min-h-screen">
       <Navbar userName={`${profile.firstname_EN} ${profile.lastname_EN}`} />
-      <div className="p-3">
-        <pre>{JSON.stringify(enrollments, null, 2)}</pre>
-      </div>
-    </>
+
+      <Content className="flex-1 p-6">
+        <StudentCourseList studentID={profile.student_id} />
+      </Content>
+
+      <Footer style={{ textAlign: "center" }}>
+        © 2025 Full Stack Group 10. All Rights Reserved.
+      </Footer>
+    </Layout>
   );
-}
+};
+
+export default StudentDashboard;

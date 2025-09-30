@@ -38,7 +38,7 @@ export default function DashboardLayout() {
   }, []);
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="p-3">Error: {error}</div>;
   }
 
   return <Spinner />;

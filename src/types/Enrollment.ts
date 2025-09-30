@@ -1,3 +1,7 @@
+export interface Instructor {
+  name: string;
+}
+
 export interface Enrollment {
   id: number;
   course_code: string;
@@ -5,7 +9,7 @@ export interface Enrollment {
   lec_section: string;
   lab_section: string;
   credit: number;
-  instructors: string[];
+  instructors: Instructor[];
   room: string;
   days: string;
   start_time: string;
