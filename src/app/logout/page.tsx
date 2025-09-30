@@ -3,7 +3,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export default function cmuEntraIDCallback() {
+export default function Logout() {
   const router = useRouter();
   useEffect(() => {
     axios.post("/api/auth/signout").then((res) => {
