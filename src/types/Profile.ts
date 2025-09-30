@@ -1,4 +1,4 @@
-export interface User {
+export interface Profile {
   cmuitaccount: string;
   cmuitaccount_name: string;
   exp: number;

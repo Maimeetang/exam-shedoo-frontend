@@ -1,35 +1,45 @@
 "use client";
-import Navbar from "@/component/Navbar";
-import { User } from "@/types/User";
 import axios from "axios";
+import { Profile } from "@/types/Profile";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Spinner from "@/component/Spinner";
 
-export default function dashboard() {
+export default function DashboardLayout() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     axios
-      .get<User>("/api/auth/profile", { withCredentials: true })
+      .get<Profile>("/api/auth/profile")
       .then((res) => {
-        if (res.data) {
-          setUser(res.data);
-        } else {
-          router.push("/"); // redirect ไปหน้า login
+        const profile = res.data;
+        switch (profile.role) {
+          case "student":
+            router.push("/dashboard/student");
+            break;
+          case "admin":
+            router.push("/dashboard/admin");
+            break;
+          case "professor":
+            router.push("/dashboard/professor");
+            break;
+          default:
+            router.push("/");
         }
       })
-      .catch(() => {
-        router.push("/"); // ถ้า error ก็ redirect
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          router.push("/login");
+        } else {
+          setError(err.message || "Something went wrong");
+        }
       });
-  }, [router]);
+  }, []);
 
-  return (
-    <>
-      <Navbar userName="Sirawit Kongkham" />
-      <div className="p-3">
-        <pre>{JSON.stringify(user, null, 2)}</pre>
-      </div>
-    </>
-  );
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  return <Spinner />;
 }
