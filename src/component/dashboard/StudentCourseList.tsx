@@ -23,14 +23,17 @@ const StudentCourseList: React.FC<Props> = ({ studentID }) => {
   }, [studentID]);
 
   function creditSum() {
-    return data.reduce((sum, course) => sum + course.credit, 0);
+    return data.reduce(
+      (sum, course) => sum + course.lab_credit + course.lec_credit,
+      0
+    );
   }
 
-  //   return (
-  //     <div className="p-3">
-  //       <pre>{JSON.stringify(data, null, 2)}</pre>
-  //     </div>
-  //   );
+  // return (
+  //   <div className="p-3">
+  //     <pre>{JSON.stringify(data, null, 2)}</pre>
+  //   </div>
+  // );
 
   return (
     <>

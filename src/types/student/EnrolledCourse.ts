@@ -8,7 +8,8 @@ export interface EnrolledCourse {
   course_name: string;
   lec_section: string;
   lab_section: string;
-  credit: number;
+  lec_credit: number;
+  lab_credit: number;
   instructors: Instructor[];
   room: string;
   days: string;

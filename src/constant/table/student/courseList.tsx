@@ -30,8 +30,8 @@ export const columns: TableProps<EnrolledCourse>["columns"] = [
   },
   {
     title: "Credit",
-    dataIndex: "credit",
     key: "credit",
+    render: (_, record) => record.lec_credit,
   },
   {
     title: "Instructors",
