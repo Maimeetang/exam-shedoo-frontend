@@ -3,7 +3,6 @@ import Navbar from "@/component/Navbar";
 import Spinner from "@/component/Spinner";
 import { Profile } from "@/types/Profile";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Layout } from "antd";
 import StudentCourseList from "@/component/dashboard/StudentCourseList";
@@ -11,7 +10,6 @@ import StudentCourseList from "@/component/dashboard/StudentCourseList";
 const { Content, Footer } = Layout;
 
 const StudentDashboard: React.FC = () => {
-  const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,10 +32,7 @@ const StudentDashboard: React.FC = () => {
 
   return (
     <Layout className="flex flex-col min-h-screen">
-      <Navbar
-        userName={`${profile.firstname_EN} ${profile.lastname_EN}`}
-        code={profile.student_id}
-      />
+      <Navbar profile={profile} />
 
       <Content className="flex-1 p-6">
         <h1 className="text-3xl font-semibold mb-2 mt-15 text-center">

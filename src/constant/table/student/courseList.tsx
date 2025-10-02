@@ -1,5 +1,6 @@
 import type { TableProps } from "antd";
 import { EnrolledCourse } from "@/types/student/EnrolledCourse";
+import { formatTimeRange } from "@/utils/date";
 
 export const columns: TableProps<EnrolledCourse>["columns"] = [
   {
@@ -56,6 +57,7 @@ export const columns: TableProps<EnrolledCourse>["columns"] = [
   {
     title: "Time",
     key: "time",
-    render: (_, { start_time, end_time }) => `${start_time} - ${end_time}`,
+    render: (_, { start_time, end_time }) =>
+      formatTimeRange(start_time, end_time),
   },
 ];
