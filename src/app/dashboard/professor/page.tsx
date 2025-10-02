@@ -34,7 +34,7 @@ const ProfessorDashboard: React.FC = () => {
 
   return (
     <Layout className="flex flex-col min-h-screen">
-      <Navbar userName={`${profile.firstname_EN} ${profile.lastname_EN}`} />
+      <Navbar profile={profile} />
 
       <Content className="flex-1 p-6">
         {/* Test */}

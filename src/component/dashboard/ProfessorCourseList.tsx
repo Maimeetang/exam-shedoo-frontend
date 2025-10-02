@@ -15,7 +15,12 @@ const ProfessorCourseList: React.FC<Props> = ({ lecturer }) => {
     axios
       .get<TeachingCourse[]>(`/api/professors/courses?lecturer=${lecturer}`)
       .then((res) => {
-        setData(res.data);
+        const uniqueCourses = [
+          ...new Map(
+            res.data.map((course) => [course.course_code, course])
+          ).values(),
+        ];
+        setData(uniqueCourses);
       })
       .catch((err) => {
         console.error(err);

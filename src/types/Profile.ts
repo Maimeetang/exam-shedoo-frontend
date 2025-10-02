@@ -12,6 +12,6 @@ export interface Profile {
   lastname_TH: string;
   organization_name_EN: string;
   organization_name_TH: string;
-  role: string;
+  role: "student" | "professor" | "admin";
   student_id: string;
 }
