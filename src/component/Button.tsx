@@ -1,0 +1,19 @@
+interface props {
+  text: string;
+}
+
+export function OrangeButton({ text }: props) {
+  return (
+    <button className="cursor-pointer rounded-2xl px-3 py-1 bg-[#F7A97B] text-[#303030]">
+      {text}
+    </button>
+  )
+}
+
+export function GreenButton({ text }: props) {
+  return (
+    <button className="cursor-pointer rounded-2xl px-3 py-1 bg-[#B6D2D6] text-[#303030]">
+      {text}
+    </button>
+  )
+}
