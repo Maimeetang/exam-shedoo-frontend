@@ -29,11 +29,7 @@ export default function DashboardLayout() {
         }
       })
       .catch((err) => {
-        if (err.response?.status === 401) {
-          router.push("/login");
-        } else {
           setError(err.message || "Something went wrong");
-        }
       });
   }, []);
 

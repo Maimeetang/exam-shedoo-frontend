@@ -38,9 +38,18 @@ const StudentDashboard: React.FC = () => {
 
   return (
     <Layout className="flex flex-col min-h-screen">
-      <Navbar userName={`${profile.firstname_EN} ${profile.lastname_EN}`} />
+      <Navbar
+        userName={`${profile.firstname_EN} ${profile.lastname_EN}`}
+        code={profile.student_id}
+      />
 
       <Content className="flex-1 p-6">
+        <h1 className="text-3xl font-semibold mb-2 mt-15 text-center">
+          Schedule Management online
+        </h1>
+        <h1 className="text-3xl font-semibold mb-15 text-center">
+          Academic Year X/XXXX
+        </h1>
         <StudentCourseList studentID={profile.student_id} />
       </Content>
 

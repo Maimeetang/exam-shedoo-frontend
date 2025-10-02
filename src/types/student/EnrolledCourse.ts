@@ -1,8 +1,8 @@
-export interface Instructor {
+interface Instructor {
   name: string;
 }
 
-export interface Enrollment {
+export interface EnrolledCourse {
   id: number;
   course_code: string;
   course_name: string;
