@@ -22,11 +22,7 @@ const StudentDashboard: React.FC = () => {
         setProfile(res.data);
       })
       .catch((err) => {
-        if (err.response?.status === 401) {
-          router.push("/login");
-        } else {
-          setError(err.message || "Something went wrong");
-        }
+        setError(err.message || "Something went wrong");
       });
   }, []);
 

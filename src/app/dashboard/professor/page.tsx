@@ -23,11 +23,7 @@ const ProfessorDashboard: React.FC = () => {
         console.log(res.data.cmuitaccount_name);
       })
       .catch((err) => {
-        if (err.response?.status === 401) {
-          router.push("/login");
-        } else {
-          setError(err.message || "Something went wrong");
-        }
+        setError(err.message || "Something went wrong");
       });
   }, []);
 
