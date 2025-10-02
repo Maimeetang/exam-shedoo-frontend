@@ -1,6 +1,7 @@
 import type { TableProps } from "antd";
 import { TeachingCourse } from "@/types/professor/TeachingCourse";
 import { formatDate, formatTimeRange } from "@/utils/date";
+import { OrangeButton, GreenButton } from "@/component/Button";
 
 export const columns: TableProps<TeachingCourse>["columns"] = [
   {
@@ -17,6 +18,16 @@ export const columns: TableProps<TeachingCourse>["columns"] = [
     title: "Course Name",
     dataIndex: "course_name",
     key: "course_name",
+  },
+  {
+    title: "Lec Section",
+    dataIndex: "lec_section",
+    key: "lec_section",
+  },
+  {
+    title: "Lab Section",
+    dataIndex: "lab_section",
+    key: "lab_section",
   },
   {
     title: "Mideterm Exam",
@@ -53,23 +64,17 @@ export const columns: TableProps<TeachingCourse>["columns"] = [
   {
     title: "",
     key: "edit",
+    width: 160,
     render: () => (
-      <img
-        src="/buttons/Edit-Exam-date.png"
-        alt="edit"
-        className="w-30 cursor-pointer"
-      />
+      <OrangeButton text="Edit Exam Date" />
     ),
   },
   {
     title: "",
     key: "view",
+    width: 150,
     render: () => (
-      <img
-        src="/buttons/View-Student.png"
-        alt="view"
-        className="w-30 cursor-pointer"
-      />
+      <GreenButton text="View Student" />
     ),
   },
 ];

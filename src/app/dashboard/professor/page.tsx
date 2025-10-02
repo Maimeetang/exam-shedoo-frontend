@@ -20,7 +20,6 @@ const ProfessorDashboard: React.FC = () => {
       .get<Profile>("/api/auth/profile")
       .then((res) => {
         setProfile(res.data);
-        console.log(res.data.cmuitaccount_name);
       })
       .catch((err) => {
         setError(err.message || "Something went wrong");
@@ -39,8 +38,7 @@ const ProfessorDashboard: React.FC = () => {
 
       <Content className="flex-1 p-6">
         {/* Test */}
-        <ProfessorCourseList lecturer={"ชินวัตร  อิศราดิสัยกุล"} />
-        {/* <ProfessorCourseList lecturer={profile.cmuitaccount_name} /> */}
+        <ProfessorCourseList lecturer={profile.firstname_TH + "  " + profile.lastname_TH} />
       </Content>
 
       <Footer style={{ textAlign: "center" }}>
