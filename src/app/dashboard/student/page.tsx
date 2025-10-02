@@ -6,6 +6,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Layout } from "antd";
 import StudentCourseList from "@/component/dashboard/StudentCourseList";
+import StudentClassSchedule from "@/component/dashboard/StudentClassSchedule";
 
 const { Content, Footer } = Layout;
 
@@ -42,6 +43,7 @@ const StudentDashboard: React.FC = () => {
           Academic Year X/XXXX
         </h1>
         <StudentCourseList studentID={profile.student_id} />
+        <StudentClassSchedule studentID={profile.student_id} />
       </Content>
 
       <Footer style={{ textAlign: "center" }}>
