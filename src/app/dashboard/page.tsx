@@ -18,10 +18,8 @@ export default function DashboardLayout() {
           case "student":
             router.push("/dashboard/student");
             break;
-          case "admin":
-            router.push("/dashboard/admin");
-            break;
           case "professor":
+          case "admin":
             router.push("/dashboard/professor");
             break;
           default:
@@ -29,7 +27,7 @@ export default function DashboardLayout() {
         }
       })
       .catch((err) => {
-          setError(err.message || "Something went wrong");
+        setError(err.message || "Something went wrong");
       });
   }, []);
 
