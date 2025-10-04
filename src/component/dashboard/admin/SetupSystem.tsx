@@ -1,15 +1,11 @@
 "use client";
 import "@ant-design/v5-patch-for-react-19";
-import React, { useEffect, useState } from "react";
-import { Typography, Table, Button, Input, Select, Tag } from "antd";
-import {
-  PostJobResponse,
-  ScrapeCourseJob,
-  ScrapeCourseJobInput,
-} from "@/types/admin/ScrapeCourseJob";
-import axios from "axios";
+import React, { useState } from "react";
+import { Typography, Table, Button, Select, Tag } from "antd";
 import ImportCourseContent from "./content/ImportCourses";
 import ImportExamContent from "./content/ImportExam";
+import FetchStatusButton from "./content/FetchStatusButton";
+import { Status } from "@/types/admin/ScrapeJob";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -41,40 +37,18 @@ interface prop {
 }
 
 export default function AdminDashboard({ setError }: prop) {
+  // scrapeCourseJob
+  const [scrapeCourseJobID, setScrapeCourseJobID] = useState<number>();
   const [scrapeCourseJobStatus, setScrapeCourseJobStatus] =
-    useState<string>("Waiting");
+    useState<Status>("waiting");
+
+  // scrapeExamJob
+  const [scrapeExamJobID, setScrapeExamJobID] = useState<number>();
   const [scrapeExamJobStatus, setScrapeExamJobStatus] =
-    useState<string>("Waiting");
-  const [uploadExcelStatus, setUploadExcelStatus] = useState<string>("Waiting");
-  const [uploadPdfStatus, setUploadPdfStatus] = useState<string>("Waiting");
+    useState<Status>("waiting");
 
-  //   function getScrapeCourseJobStatus(id: number) {
-  //     if (!id) return;
-  //     axios
-  //       .get<ScrapeCourseJob>(`/api/admin/scrape/course/status/${id}`)
-  //       .then((res) => {
-  //         if (res.data) {
-  //           setScrapeCourseJobStatus(res.data.Status);
-  //         }
-  //       })
-  //       .catch((err) => {
-  //         setError(err.message || "Something went wrong");
-  //       });
-  //   }
-
-  //   function getScrapeExamJobStatus(jobID: string) {
-  //     if (!jobID) return;
-  //     axios
-  //       .get<PostJobResponse>(`/api/admin/scrape/exams/status/${jobID}`)
-  //       .then((res) => {
-  //         if (res.data) {
-  //           setScrapeExamJobStatus(res.data.status);
-  //         }
-  //       })
-  //       .catch((err) => {
-  //         setError(err.message || "Something went wrong");
-  //       });
-  //   }
+  const [uploadExcelStatus, setUploadExcelStatus] = useState<Status>("waiting");
+  const [uploadPdfStatus, setUploadPdfStatus] = useState<Status>("waiting");
 
   //   function uploadEnrollments(file: File) {
   //     const formData = new FormData();
@@ -100,7 +74,9 @@ export default function AdminDashboard({ setError }: prop) {
       job: "1. Import courses",
       content: (
         <ImportCourseContent
+          status={scrapeCourseJobStatus}
           setError={setError}
+          setScrapeCourseJobID={setScrapeCourseJobID}
           setScrapeCourseJobStatus={setScrapeCourseJobStatus}
         />
       ),
@@ -127,7 +103,9 @@ export default function AdminDashboard({ setError }: prop) {
       ),
       content: (
         <ImportExamContent
+          status={scrapeExamJobStatus}
           setError={setError}
+          setScrapeExamJobID={setScrapeExamJobID}
           setScrapeExamJobStatus={setScrapeExamJobStatus}
         />
       ),
@@ -162,12 +140,6 @@ export default function AdminDashboard({ setError }: prop) {
 
   return (
     <div style={{ flex: 2.5, padding: "0 20px" }}>
-      <Text
-        type="secondary"
-        style={{ color: "#ae9eb3", marginBottom: 10, display: "block" }}
-      >
-        Please follow by step wait before process completed.
-      </Text>
       <Table<JobRow>
         pagination={false}
         dataSource={jobs}
@@ -194,6 +166,18 @@ export default function AdminDashboard({ setError }: prop) {
         showHeader={true}
         bordered={false}
       />
+      <div className="flex flex-row items-strat justify-between my-5">
+        <Text type="secondary" style={{ color: "#ae9eb3" }}>
+          Please follow by step wait before process completed.
+        </Text>
+        <FetchStatusButton
+          setError={setError}
+          scrapeCourseJobID={scrapeCourseJobID}
+          setScrapeCourseJobStatus={setScrapeCourseJobStatus}
+          scrapeExamJobID={scrapeExamJobID}
+          setScrapeExamJobStatus={setScrapeExamJobStatus}
+        />
+      </div>
     </div>
   );
 }

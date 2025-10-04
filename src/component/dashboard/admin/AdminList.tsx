@@ -11,6 +11,7 @@ interface prop {
 }
 
 export function AdminList({ setError }: prop) {
+  const [isLoading, setIsLoading] = useState(false);
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [newAdmin, setNewAdmin] = useState<string>("");
 
@@ -19,6 +20,7 @@ export function AdminList({ setError }: prop) {
   }, []);
 
   function getAdmins() {
+    setIsLoading(true);
     axios
       .get<Admin[]>("/api/admin")
       .then((res) => {
@@ -28,19 +30,27 @@ export function AdminList({ setError }: prop) {
       })
       .catch((err) => {
         setError(err.message || "Something went wrong");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }
 
   function removeAdmin(accout: string) {
+    setIsLoading(true);
     axios
       .delete(`/api/admin/${accout}`)
       .then(() => getAdmins())
       .catch((err) => {
         setError(err.message || "Something went wrong");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }
 
   function addAdmin(account: string) {
+    setIsLoading(true);
     axios
       .post("/api/admin", { account })
       .then(() => {
@@ -49,6 +59,9 @@ export function AdminList({ setError }: prop) {
       })
       .catch((err) => {
         setError(err.message || "Something went wrong");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }
 
@@ -77,7 +90,12 @@ export function AdminList({ setError }: prop) {
                 title="Remove admin?"
                 onConfirm={() => removeAdmin(record.Account)}
               >
-                <Button type="link" icon={<DeleteOutlined />} danger />
+                <Button
+                  type="link"
+                  icon={<DeleteOutlined />}
+                  danger
+                  disabled={isLoading}
+                />
               </Popconfirm>
             ),
             width: 60,
@@ -91,11 +109,13 @@ export function AdminList({ setError }: prop) {
           value={newAdmin}
           onChange={(e) => setNewAdmin(e.target.value)}
           style={{ width: 140 }}
+          disabled={isLoading}
         />
         <Button
-          className="!bg-[#F7A97B] !text-white hover:!bg-[#ed994b] focus:!bg-[#ed994b] border-none"
+          className="!bg-[#F7A97B] !text-black hover:!bg-[#ed994b] border-none"
           type="primary"
           onClick={() => addAdmin(newAdmin)}
+          disabled={isLoading || !newAdmin}
         >
           Add Admin
         </Button>

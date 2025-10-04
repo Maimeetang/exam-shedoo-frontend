@@ -62,6 +62,7 @@ const AdminDashboard: React.FC = () => {
             background: "#fff",
             borderRadius: "0 0 16px 16px",
             padding: 16,
+            overflow: "auto",
           }}
         >
           <AdminList setError={setError} />

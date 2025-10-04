@@ -5,23 +5,30 @@ import { Button, Input, Select } from "antd";
 import {
   PostJobResponse,
   ScrapeCourseJobInput,
-} from "@/types/admin/ScrapeCourseJob";
+  Status,
+} from "@/types/admin/ScrapeJob";
 import axios from "axios";
 const { Option } = Select;
 
 interface prop {
+  status: Status;
   setError: (error: string) => void;
-  setScrapeCourseJobStatus: (status: string) => void;
+  setScrapeCourseJobID: (id: number) => void;
+  setScrapeCourseJobStatus: (status: Status) => void;
 }
 
 export default function ImportCourseContent({
+  status,
   setError,
+  setScrapeCourseJobID,
   setScrapeCourseJobStatus,
 }: prop) {
+  const [isLoading, setIsLoading] = useState(false);
   const [scrapeCourseJobInput, setScrapeCourseJobInput] =
     useState<ScrapeCourseJobInput>({ start: "", end: "", workers: 4 });
 
   function createScrapeCourseJob() {
+    setIsLoading(true);
     axios
       .post<PostJobResponse>(
         "/api/admin/scrape/course/start",
@@ -29,11 +36,15 @@ export default function ImportCourseContent({
       )
       .then((res) => {
         if (res.data) {
+          setScrapeCourseJobID(res.data.job_id);
           setScrapeCourseJobStatus(res.data.status);
         }
       })
       .catch((err) => {
         setError(err.message || "Something went wrong");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }
 
@@ -42,8 +53,9 @@ export default function ImportCourseContent({
       Start:{" "}
       <Input
         type="number"
-        className="!w-20"
+        className="!w-30"
         value={scrapeCourseJobInput.start}
+        disabled={isLoading || status !== "waiting"}
         onChange={(e) =>
           setScrapeCourseJobInput({
             ...scrapeCourseJobInput,
@@ -54,8 +66,9 @@ export default function ImportCourseContent({
       End:{" "}
       <Input
         type="number"
-        className="!w-20"
+        className="!w-30"
         value={scrapeCourseJobInput.end}
+        disabled={isLoading || status !== "waiting"}
         onChange={(e) =>
           setScrapeCourseJobInput({
             ...scrapeCourseJobInput,
@@ -67,6 +80,7 @@ export default function ImportCourseContent({
       <Select
         className="!w-16 !text-center"
         value={scrapeCourseJobInput.workers}
+        disabled={isLoading || status !== "waiting"}
         onChange={(value) =>
           setScrapeCourseJobInput({
             ...scrapeCourseJobInput,
@@ -77,7 +91,17 @@ export default function ImportCourseContent({
         <Option value="4">4</Option>
         <Option value="8">8</Option>
       </Select>
-      <Button className="!w-24" onClick={() => createScrapeCourseJob()}>
+      <Button
+        className="!w-24"
+        onClick={() => createScrapeCourseJob()}
+        disabled={
+          isLoading ||
+          status !== "waiting" ||
+          !scrapeCourseJobInput.start ||
+          !scrapeCourseJobInput.end
+        }
+        loading={isLoading}
+      >
         Start
       </Button>
     </div>
