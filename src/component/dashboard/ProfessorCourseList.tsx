@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button } from "antd";
+import { Table } from "antd";
 import { columns as baseColumns } from "@/constant/table/professor/courseList";
 import { TeachingCourse } from "@/types/professor/TeachingCourse";
 import axios from "axios";
@@ -19,10 +19,7 @@ const ProfessorCourseList: React.FC<Props> = ({ lecturer }) => {
     axios
       .get<TeachingCourse[]>(`/api/professors/courses?lecturer=${lecturer}`)
       .then((res) => {
-        const uniqueCourses = [
-          ...new Map(res.data.map((course) => [course.course_code, course])).values(),
-        ];
-        setData(uniqueCourses);
+        setData(res.data);
       })
       .catch((err) => console.error(err));
   }, [lecturer]);
@@ -69,7 +66,7 @@ const ProfessorCourseList: React.FC<Props> = ({ lecturer }) => {
                         course_name: selectedRowKeys
                           .map((key) => data.find((c) => c.course_id === key)?.course_name)
                           .filter(Boolean)
-                          .join("+ "),
+                          .join(" and "),
                       },
                     }}
                   >

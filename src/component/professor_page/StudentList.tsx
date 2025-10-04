@@ -8,9 +8,10 @@ import { BlueButton } from "../Button";
 
 interface Props {
   courseIDs: string[];
+  courseName?: string;
 }
 
-const StudentList: React.FC<Props> = ({ courseIDs }) => {
+const StudentList: React.FC<Props> = ({ courseIDs, courseName }) => {
   const [data, setData] = useState<EnrolledStudent[]>([]);
   const [filteredData, setFilteredData] = useState<EnrolledStudent[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -35,9 +36,8 @@ const StudentList: React.FC<Props> = ({ courseIDs }) => {
         const allStudentsArrays = await Promise.all(requests);
         const allStudents = allStudentsArrays.flat();
 
-        // Remove duplicates based on enrollment_id
         const uniqueStudents = [
-          ...new Map(allStudents.map((s) => [s.enrollment_id, s])).values(),
+          ...new Map(allStudents.map((s) => [s.student_code, s])).values(),
         ];
 
         setData(uniqueStudents);
@@ -103,7 +103,10 @@ const StudentList: React.FC<Props> = ({ courseIDs }) => {
                   <Link
                     href={{
                       pathname: "/dashboard/professor/shedules",
-                      query: { ids: courseIDs.join(",") },
+                      query: {
+                        ids: courseIDs.join(","),
+                        course_name: courseName,
+                      },
                     }}
                   >
                     <BlueButton text="Schedule Student" />

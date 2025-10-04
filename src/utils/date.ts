@@ -14,7 +14,7 @@ export const formatDateRange = (start?: string | Date, end?: string | Date) => {
   return `${formatDate(start)} - ${formatDate(end)}`;
 };
 
-const formatTime = (time?: string) => {
+export const formatTime = (time?: string) => {
   if (!time || time.length !== 4) return time || "-";
   const hours = time.slice(0, 2);
   const minutes = time.slice(2, 4);

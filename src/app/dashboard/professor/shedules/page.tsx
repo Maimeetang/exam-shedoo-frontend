@@ -13,9 +13,9 @@ const ExamSchedules: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const query = useSearchParams();
 
-  const courseName = query.get("course_name"); // optional, just for display
-  const courseIdsQuery = query.get("ids"); // comma-separated ids from URL
+  const courseIdsQuery = query.get("ids");
   const courseIDs = courseIdsQuery ? courseIdsQuery.split(",") : [];
+  const courseName = query.get("course_name");
 
   useEffect(() => {
     axios
@@ -31,12 +31,9 @@ const ExamSchedules: React.FC = () => {
     <Layout className="flex flex-col min-h-screen">
       <Navbar profile={profile} />
       <div className="flex flex-col flex-1 items-center justify-center p-10">
-        <h1 className="text-3xl font-semibold mb-6 text-center">
-          {courseName || "Students"}
-        </h1>
-        <div className="w-full flex justify-center">
-          {/* Pass courseIDs from query to ScheduleTable */}
-          <ScheduleTable courseIds={courseIDs} type="midterm" />
+        <div className="w-full flex flex-col items-center gap-12">
+          <ScheduleTable courseIds={courseIDs} courseName={courseName || "undefined"} type="midterm" />
+          <ScheduleTable courseIds={courseIDs} courseName={courseName || "undefined"} type="final" />
         </div>
       </div>
       <Footer style={{ textAlign: "center" }}>

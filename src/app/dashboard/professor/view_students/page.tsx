@@ -3,7 +3,7 @@ import Navbar from "@/component/Navbar";
 import StudentList from "@/component/professor_page/StudentList";
 import Spinner from "@/component/Spinner";
 import { Profile } from "@/types/Profile";
-import Layout, { Content, Footer } from "antd/es/layout/layout";
+import Layout, { Footer } from "antd/es/layout/layout";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -32,7 +32,7 @@ const ViewStudents: React.FC = () => {
       <div className="flex flex-col flex-1 items-center justify-center p-10">
         <h1 className="text-3xl font-semibold mb-6 text-center">{courseName || "Students"}</h1>
         <div className="w-full flex justify-center">
-          <StudentList courseIDs={courseIDs} />
+          <StudentList courseIDs={courseIDs} courseName={courseName || "undefined"} />
         </div>
       </div>
       <Footer style={{ textAlign: "center" }}>

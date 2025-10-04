@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { EnrolledCourse } from "@/types/student/EnrolledCourse";
 import { formatTimeRange } from "@/utils/date";
-import { dayColors } from "@/types/Colorday";
+import { dayColors } from "@/types/Color";
 
 const dayMap: Record<string, string> = {
   M: "Monday",
