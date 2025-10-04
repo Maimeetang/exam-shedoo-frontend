@@ -7,7 +7,11 @@ const items: MenuProps["items"] = [
   {
     key: "1",
     label: (
-      <a target="_blank" rel="noopener noreferrer" href="">
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="/dashboard/professor/admin"
+      >
         Admin Login
       </a>
     ),

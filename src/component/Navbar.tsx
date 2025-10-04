@@ -2,6 +2,7 @@
 
 import { Profile } from "@/types/Profile";
 import DropdownMenu from "./DropdownMenu";
+import Link from "next/link";
 
 interface prop {
   profile: Profile;
@@ -18,7 +19,13 @@ export default function Navbar({ profile }: prop) {
             <p className="font-normal text-black">{profile.student_id}</p>
           )}
         </div>
-        <DropdownMenu />
+        {profile.role === "professor" ||
+          (profile.role === "admin" && <DropdownMenu />)}
+        {profile.role === "student" && (
+          <Link href="/logout">
+            <p className="text-black font-medium underline">Log out</p>
+          </Link>
+        )}
       </div>
     </nav>
   );
