@@ -2,6 +2,7 @@ import type { TableProps } from "antd";
 import { TeachingCourse } from "@/types/professor/TeachingCourse";
 import { formatDate, formatTimeRange } from "@/utils/date";
 import { OrangeButton, GreenButton } from "@/component/Button";
+import Link from "next/link";
 
 export const columns: TableProps<TeachingCourse>["columns"] = [
   {
@@ -73,8 +74,19 @@ export const columns: TableProps<TeachingCourse>["columns"] = [
     title: "",
     key: "view",
     width: 150,
-    render: () => (
-      <GreenButton text="View Student" />
+    render: (_: any, record: TeachingCourse) => (
+      <Link
+        href={{
+          pathname: `/dashboard/professor/view_students`,
+          query: {
+            ids: record.course_id,
+            course_name: record.course_name,
+            course_section: record.lec_section,
+          },
+        }}
+      >
+        <GreenButton text="View Student" />
+      </Link>
     ),
   },
 ];

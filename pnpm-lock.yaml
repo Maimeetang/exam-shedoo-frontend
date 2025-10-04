@@ -10,16 +10,19 @@ importers:
     dependencies:
       '@ant-design/nextjs-registry':
         specifier: ^1.1.0
-        version: 1.1.0(@ant-design/cssinjs@1.24.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(antd@5.27.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(next@15.5.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 1.1.0(@ant-design/cssinjs@1.24.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(antd@5.27.4(date-fns@4.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(next@15.5.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@ant-design/v5-patch-for-react-19':
         specifier: ^1.0.3
-        version: 1.0.3(antd@5.27.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 1.0.3(antd@5.27.4(date-fns@4.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       antd:
         specifier: ^5.27.4
-        version: 5.27.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 5.27.4(date-fns@4.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       axios:
         specifier: ^1.12.2
         version: 1.12.2
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       dayjs:
         specifier: ^1.11.18
         version: 1.11.18
@@ -913,6 +916,9 @@ packages:
   data-view-byte-offset@1.0.1:
     resolution: {integrity: sha512-BS8PfmtDGnrgYdOonGZQdLZslWIeCGFP9tpan0hi1Co2Zr2NKADsvGYA8XxuG/4UWgJ6Cjtv+YJnB6MM69QGlQ==}
     engines: {node: '>= 0.4'}
+
+  date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
 
   dayjs@1.11.18:
     resolution: {integrity: sha512-zFBQ7WFRvVRhKcWoUh+ZA1g2HVgUbsZm9sbddh8EC5iv93sui8DVVz1Npvz+r6meo9VKfa8NyLWBsQK1VvIKPA==}
@@ -2263,10 +2269,10 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
-  '@ant-design/nextjs-registry@1.1.0(@ant-design/cssinjs@1.24.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(antd@5.27.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(next@15.5.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@ant-design/nextjs-registry@1.1.0(@ant-design/cssinjs@1.24.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(antd@5.27.4(date-fns@4.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(next@15.5.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
       '@ant-design/cssinjs': 1.24.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      antd: 5.27.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      antd: 5.27.4(date-fns@4.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       next: 15.5.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
@@ -2280,9 +2286,9 @@ snapshots:
       resize-observer-polyfill: 1.5.1
       throttle-debounce: 5.0.2
 
-  '@ant-design/v5-patch-for-react-19@1.0.3(antd@5.27.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+  '@ant-design/v5-patch-for-react-19@1.0.3(antd@5.27.4(date-fns@4.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
-      antd: 5.27.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      antd: 5.27.4(date-fns@4.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
@@ -2866,7 +2872,7 @@ snapshots:
     dependencies:
       color-convert: 2.0.1
 
-  antd@5.27.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  antd@5.27.4(date-fns@4.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       '@ant-design/colors': 7.2.1
       '@ant-design/cssinjs': 1.24.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -2898,7 +2904,7 @@ snapshots:
       rc-motion: 2.9.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       rc-notification: 5.6.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       rc-pagination: 5.1.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      rc-picker: 4.11.3(dayjs@1.11.18)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      rc-picker: 4.11.3(date-fns@4.1.0)(dayjs@1.11.18)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       rc-progress: 4.0.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       rc-rate: 2.13.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       rc-resize-observer: 1.4.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -3109,6 +3115,8 @@ snapshots:
       call-bound: 1.0.4
       es-errors: 1.3.0
       is-data-view: 1.0.2
+
+  date-fns@4.1.0: {}
 
   dayjs@1.11.18: {}
 
@@ -4168,7 +4176,7 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
-  rc-picker@4.11.3(dayjs@1.11.18)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  rc-picker@4.11.3(date-fns@4.1.0)(dayjs@1.11.18)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       '@babel/runtime': 7.28.4
       '@rc-component/trigger': 2.3.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -4179,6 +4187,7 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
     optionalDependencies:
+      date-fns: 4.1.0
       dayjs: 1.11.18
 
   rc-progress@4.0.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0):

@@ -17,3 +17,12 @@ export function GreenButton({ text }: props) {
     </button>
   )
 }
+
+export function BlueButton({ text }: props) {
+  return (
+    <button className="cursor-pointer rounded-2xl px-3 py-1 bg-[#3F5167] text-[#FFFFFF]">
+      {text}
+    </button>
+  )
+}
+
