@@ -6,15 +6,7 @@ import Link from "next/link";
 const items: MenuProps["items"] = [
   {
     key: "1",
-    label: (
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="/dashboard/professor/admin"
-      >
-        Admin Login
-      </a>
-    ),
+    label: <Link href="/dashboard/professor/admin">Admin Login</Link>,
   },
   {
     key: "2",
