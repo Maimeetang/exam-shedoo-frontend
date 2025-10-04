@@ -155,14 +155,30 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
 
   const times = ["0800-1100", "1200-1500", "1530-1830"]
 
-  const findSlot = (date: string, time: string) => {
+  const findSlots = (dateStr: string, time: string): ExamSlot | null => {
     const [start, end] = time.split("-");
-    return mergedSlots.find(
-      (s) =>
-        s.date === date &&
+    const targetDate = parseDate(dateStr);
+
+    const matchedSlots = mergedSlots.filter((s) => {
+      const slotDate = parseDate(s.date);
+      return (
+        slotDate.getTime() === targetDate.getTime() &&
         (s.start_time ?? "").trim() === (start ?? "").trim() &&
         (s.end_time ?? "").trim() === (end ?? "").trim()
-    );
+      );
+    });
+
+    if (!matchedSlots.length) return null;
+
+    const mergedCourses: Course[] = [];
+    matchedSlots.forEach((slot) => mergedCourses.push(...slot.courses));
+
+    return {
+      date: dateStr,
+      start_time: start,
+      end_time: end,
+      courses: mergedCourses,
+    };
   };
 
   const formatDateForHeader = (dateStr: string) => {
@@ -178,7 +194,7 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
     };
   };
 
-  const getTotalStudents = (slot?: ExamSlot) => {
+  const getTotalStudents = (slot?: ExamSlot | null) => {
     if (!slot) return 0;
     const studentMap = new Map<string, Student>();
     slot.courses.forEach((c) => {
@@ -207,12 +223,11 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
     return Array.from(map.values());
   };
 
-  const handleCellClick = (slot?: ExamSlot) => {
+  const handleCellClick = (slot: ExamSlot | null) => {
     if (!slot) return;
     setSelectedSlot(slot);
     setIsModalOpen(true);
   };
-
 
   if (loading) return <Spinner />;
   if (!reports.length) return <div className="text-center p-4">No data available</div>;
@@ -279,13 +294,13 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
                     <div>{end}</div>
                   </div>
 
-                  {dates.map((date) => {
-                    const slot = findSlot(date, time);
+                  {dates.map((date, dateIdx) => {
+                    const slot = findSlots(date, time);
                     const count = getTotalStudents(slot);
 
                     return (
                       <div
-                        key={`${date}-${time}`}
+                        key={`${date}-${time}-${dateIdx}`}
                         style={{ backgroundColor: getStudentBgColor(count) }}
                         className={
                           `flex items-center justify-center p-4 border border-gray-200 min-h-[80px]

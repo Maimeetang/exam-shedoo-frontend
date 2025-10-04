@@ -2,6 +2,7 @@ export interface TeachingCourse {
   course_id: number;
   course_code: string;
   course_name: string;
+  exam_id?: number;
   lec_section: string;
   lab_section: string;
   midterm_date: Date;

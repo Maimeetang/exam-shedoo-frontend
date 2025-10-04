@@ -1,10 +1,11 @@
 interface props {
   text: string;
+  onClick?: () => void;
 }
 
-export function OrangeButton({ text }: props) {
+export function OrangeButton({ text, onClick }: props) {
   return (
-    <button className="cursor-pointer rounded-2xl px-3 py-1 bg-[#F7A97B] text-[#303030]">
+    <button className="cursor-pointer rounded-2xl px-3 py-1 bg-[#F7A97B] text-[#303030]" onClick={onClick}>
       {text}
     </button>
   )

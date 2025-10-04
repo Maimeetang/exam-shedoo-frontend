@@ -46,7 +46,6 @@ const StudentList: React.FC<Props> = ({ courseIDs, courseName }) => {
         console.error(err);
       }
     };
-
     fetchAllStudents();
   }, [courseIDs]);
 

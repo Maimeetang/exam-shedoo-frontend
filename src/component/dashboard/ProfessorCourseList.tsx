@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "antd";
-import { columns as baseColumns } from "@/constant/table/professor/courseList";
+import { getColumns } from "@/constant/table/professor/courseList";
 import { TeachingCourse } from "@/types/professor/TeachingCourse";
 import axios from "axios";
 import Link from "next/link";
@@ -29,6 +29,13 @@ const ProfessorCourseList: React.FC<Props> = ({ lecturer }) => {
     setSelectedRowKeys([]);
   };
 
+  const handleExamUpdate = (updated: TeachingCourse) => {
+    setData((prev) =>
+      prev.map((c) => (c.course_id === updated.course_id ? updated : c))
+    );
+  };
+
+
   const rowSelection = {
     selectedRowKeys,
     onChange: (keys: React.Key[]) => setSelectedRowKeys(keys),
@@ -49,7 +56,7 @@ const ProfessorCourseList: React.FC<Props> = ({ lecturer }) => {
       <div className="overflow-x-auto">
         <div className="min-w-[800px] bg-white">
           <Table<TeachingCourse>
-            columns={baseColumns}
+            columns={getColumns(handleExamUpdate)}
             dataSource={data}
             rowKey="course_id"
             pagination={false}
