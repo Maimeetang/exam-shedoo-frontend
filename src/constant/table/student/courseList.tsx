@@ -29,10 +29,16 @@ export const columns: TableProps<EnrolledCourse>["columns"] = [
     },
   },
   {
-    title: "Credit",
-    key: "credit",
+    title: "Lec Credit",
+    key: "lec_credit",
     render: (_, record) =>
-      record.lec_credit === 0 ? record.lab_credit : record.lec_credit,
+      record.lec_credit,
+  },
+  {
+    title: "Lab Credit",
+    key: "lab_credit",
+    render: (_, record) =>
+      record.lab_credit,
   },
   {
     title: "Instructors",
