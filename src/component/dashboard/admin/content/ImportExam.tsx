@@ -7,16 +7,18 @@ import axios from "axios";
 
 interface prop {
   status: Status;
+  prevTaskStatus: Status;
   setError: (error: string) => void;
-  setScrapeExamJobID: (id: number) => void;
-  setScrapeExamJobStatus: (status: Status) => void;
+  setID: (id: number) => void;
+  setStatus: (status: Status) => void;
 }
 
 export default function ImportExamContent({
   status,
+  prevTaskStatus,
   setError,
-  setScrapeExamJobID,
-  setScrapeExamJobStatus,
+  setID,
+  setStatus,
 }: prop) {
   const [isLoading, setIsLoading] = useState(false);
   const [academicYear, setAcademicYear] = useState<string>();
@@ -28,8 +30,8 @@ export default function ImportExamContent({
       .post<PostJobResponse>(`/api/admin/scrape/exams/start/${academicYear}`)
       .then((res) => {
         if (res.data) {
-          setScrapeExamJobID(res.data.job_id);
-          setScrapeExamJobStatus(res.data.status);
+          setID(res.data.job_id);
+          setStatus(res.data.status);
         }
       })
       .catch((err) => {
@@ -56,7 +58,12 @@ export default function ImportExamContent({
       </span>
       <Button
         className="!w-24"
-        disabled={isLoading || status !== "waiting" || !academicYear}
+        disabled={
+          isLoading ||
+          status !== "waiting" ||
+          prevTaskStatus !== "completed" ||
+          !academicYear
+        }
         loading={isLoading}
         onClick={() => createScrapeExamJob()}
       >

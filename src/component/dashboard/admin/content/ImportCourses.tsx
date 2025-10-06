@@ -13,15 +13,15 @@ const { Option } = Select;
 interface prop {
   status: Status;
   setError: (error: string) => void;
-  setScrapeCourseJobID: (id: number) => void;
-  setScrapeCourseJobStatus: (status: Status) => void;
+  setID: (id: number) => void;
+  setStatus: (status: Status) => void;
 }
 
 export default function ImportCourseContent({
   status,
   setError,
-  setScrapeCourseJobID,
-  setScrapeCourseJobStatus,
+  setID,
+  setStatus,
 }: prop) {
   const [isLoading, setIsLoading] = useState(false);
   const [scrapeCourseJobInput, setScrapeCourseJobInput] =
@@ -36,8 +36,8 @@ export default function ImportCourseContent({
       )
       .then((res) => {
         if (res.data) {
-          setScrapeCourseJobID(res.data.job_id);
-          setScrapeCourseJobStatus(res.data.status);
+          setID(res.data.job_id);
+          setStatus(res.data.status);
         }
       })
       .catch((err) => {

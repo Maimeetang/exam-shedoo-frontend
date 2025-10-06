@@ -6,6 +6,8 @@ import ImportCourseContent from "./content/ImportCourses";
 import ImportExamContent from "./content/ImportExam";
 import FetchStatusButton from "./content/FetchStatusButton";
 import { Status } from "@/types/admin/ScrapeJob";
+import UploadExcelButton from "./content/UploadExcelButton";
+import UploadPdf from "./content/UploadPdf";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -50,24 +52,6 @@ export default function AdminDashboard({ setError }: prop) {
   const [uploadExcelStatus, setUploadExcelStatus] = useState<Status>("waiting");
   const [uploadPdfStatus, setUploadPdfStatus] = useState<Status>("waiting");
 
-  //   function uploadEnrollments(file: File) {
-  //     const formData = new FormData();
-  //     formData.append("file", file);
-
-  //     axios
-  //       .post<{ message: string }>("/api/admin/enrollments/upload", formData, {
-  //         headers: { "Content-Type": "multipart/form-data" },
-  //       })
-  //       .then((res) => {
-  //         if (res.data) {
-  //           setUploadExcelStatus(res.data.message); // ตัวอย่าง: "Imported N records"
-  //         }
-  //       })
-  //       .catch((err) => {
-  //         setError(err.message || "Something went wrong");
-  //       });
-  //   }
-
   const jobs: JobRow[] = [
     {
       key: "1",
@@ -76,8 +60,8 @@ export default function AdminDashboard({ setError }: prop) {
         <ImportCourseContent
           status={scrapeCourseJobStatus}
           setError={setError}
-          setScrapeCourseJobID={setScrapeCourseJobID}
-          setScrapeCourseJobStatus={setScrapeCourseJobStatus}
+          setID={setScrapeCourseJobID}
+          setStatus={setScrapeCourseJobStatus}
         />
       ),
       status: (
@@ -89,7 +73,13 @@ export default function AdminDashboard({ setError }: prop) {
     {
       key: "2",
       job: "2. Upload Enrolment.xlsx",
-      content: <Button className="!w-24">Upload</Button>,
+      content: (
+        <UploadExcelButton
+          status={uploadExcelStatus}
+          prevTaskStatus={scrapeCourseJobStatus}
+          setStatus={setUploadExcelStatus}
+        />
+      ),
       status: (
         <Tag color={getStatusColor(uploadExcelStatus)}>{uploadExcelStatus}</Tag>
       ),
@@ -104,9 +94,10 @@ export default function AdminDashboard({ setError }: prop) {
       content: (
         <ImportExamContent
           status={scrapeExamJobStatus}
+          prevTaskStatus={uploadExcelStatus}
           setError={setError}
-          setScrapeExamJobID={setScrapeExamJobID}
-          setScrapeExamJobStatus={setScrapeExamJobStatus}
+          setID={setScrapeExamJobID}
+          setStatus={setScrapeExamJobStatus}
         />
       ),
       status: (
@@ -125,11 +116,11 @@ export default function AdminDashboard({ setError }: prop) {
       content: (
         <div className="flex flex-row gap-2 items-center justify-end">
           Type:{" "}
-          <Select defaultValue="Midterm" className="w-24 text-center">
-            <Option value="Midterm">Midterm</Option>
-            <Option value="Final">Final</Option>
-          </Select>
-          <Button className="!w-24">Upload</Button>
+          <UploadPdf
+            status={uploadPdfStatus}
+            prevTaskStatus={scrapeExamJobStatus}
+            setStatus={setUploadPdfStatus}
+          />
         </div>
       ),
       status: (
