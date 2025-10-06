@@ -21,25 +21,22 @@ const dayMap: Record<string, string> = {
 const courseColorMap = new Map<string, string>();
 
 const getRandomUnusedDayColor = () => {
-  // ดึงสีที่ใช้ไปแล้ว
   const usedColors = new Set(courseColorMap.values());
-  // filter สีที่ยังไม่ถูกใช้
+
   const unusedColors = Object.values(dayColors).filter(
     (c) => !usedColors.has(c)
   );
 
-  // ถ้าหมดแล้ว ให้กลับไปใช้ random ปกติ
   if (unusedColors.length === 0) {
     return Object.values(dayColors)[
       Math.floor(Math.random() * Object.values(dayColors).length)
     ];
   }
 
-  // เลือกสีจาก unusedColors
   return unusedColors[Math.floor(Math.random() * unusedColors.length)];
 };
 
-const getCourseColor = (courseId: string | number) => {
+const getCourseColor = (courseId: number) => {
   const key = courseId.toString();
   if (!courseColorMap.has(key)) {
     courseColorMap.set(key, getRandomUnusedDayColor());
@@ -70,7 +67,7 @@ const StudentClassSchedule: React.FC<Props> = ({ studentID }) => {
   const tableRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="rounded-md overflow-hidden shadow-lg mx-5">
+    <div className="w-full max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
       <div ref={tableRef}>
         <div className="bg-[#AD92B2] px-4 py-5">
           <h2 className="text-white text-2xl font-semibold">ClassSchedule</h2>

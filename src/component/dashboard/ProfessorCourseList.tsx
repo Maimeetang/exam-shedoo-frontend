@@ -5,6 +5,7 @@ import { TeachingCourse } from "@/types/professor/TeachingCourse";
 import axios from "axios";
 import Link from "next/link";
 import { GreenButton } from "../Button";
+import "@ant-design/v5-patch-for-react-19";
 
 interface Props {
   lecturer: string;
@@ -34,7 +35,6 @@ const ProfessorCourseList: React.FC<Props> = ({ lecturer }) => {
       prev.map((c) => (c.course_id === updated.course_id ? updated : c))
     );
   };
-
 
   const rowSelection = {
     selectedRowKeys,
@@ -71,7 +71,10 @@ const ProfessorCourseList: React.FC<Props> = ({ lecturer }) => {
                       query: {
                         ids: selectedRowKeys.join(","),
                         course_name: selectedRowKeys
-                          .map((key) => data.find((c) => c.course_id === key)?.course_name)
+                          .map(
+                            (key) =>
+                              data.find((c) => c.course_id === key)?.course_name
+                          )
                           .filter(Boolean)
                           .join(" and "),
                       },

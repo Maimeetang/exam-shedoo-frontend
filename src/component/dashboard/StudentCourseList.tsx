@@ -37,7 +37,7 @@ const StudentCourseList: React.FC<Props> = ({ studentID }) => {
 
   return (
     <>
-      <div className="rounded-md overflow-hidden shadow-lg mx-5">
+      <div className="w-full max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
         <div className="bg-[#AD92B2] px-4 py-5">
           <h2 className="text-white text-2xl font-semibold">Course List</h2>
         </div>
@@ -53,7 +53,7 @@ const StudentCourseList: React.FC<Props> = ({ studentID }) => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col mx-5 my-10">
+      <div className="flex max-w-7xl flex-col mx-auto mx-5 my-10 center">
         <p>Enrolled: {creditSum()} / 21</p>
         <Progress
           percent={Math.floor((creditSum() / 21) * 100)}

@@ -35,3 +35,33 @@ export const toDayjs = (date?: Date | null): dayjs.Dayjs | null => {
   if (!date) return null;
   return dayjs(date).year(new Date().getFullYear());
 };
+
+export const parseDate = (raw: string) => {
+  if (!raw) return new Date(NaN);
+  const cleaned = raw.trim().replace(/\s+/g, " ");
+  const m = cleaned.match(/^([A-Za-z]+)\s+(\d{1,2})$/);
+  if (!m) {
+    const d = new Date(cleaned);
+    return isNaN(d.getTime()) ? new Date(NaN) : d;
+  }
+  const mon = m[1].slice(0, 3).toUpperCase();
+  const day = parseInt(m[2], 10);
+  const monthMap: Record<string, number> = {
+    JAN: 0,
+    FEB: 1,
+    MAR: 2,
+    APR: 3,
+    MAY: 4,
+    JUN: 5,
+    JUL: 6,
+    AUG: 7,
+    SEP: 8,
+    OCT: 9,
+    NOV: 10,
+    DEC: 11,
+  };
+  const monthIdx = monthMap[mon] ?? NaN;
+  if (isNaN(monthIdx)) return new Date(NaN);
+  const year = new Date().getFullYear();
+  return new Date(year, monthIdx, day);
+};

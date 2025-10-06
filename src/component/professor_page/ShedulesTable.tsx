@@ -4,7 +4,7 @@ import axios from "axios";
 import Spinner from "../Spinner";
 import { tableColors } from "@/types/Color";
 import { getHeaderTextColor, getStudentBgColor } from "@/utils/color";
-import { formatTime } from "@/utils/date";
+import { formatTime, parseDate } from "@/utils/date";
 import { Modal, Table } from "antd";
 
 interface Student {
@@ -38,7 +38,11 @@ interface Props {
   type?: "midterm" | "final";
 }
 
-const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm" }) => {
+const ScheduleTable: React.FC<Props> = ({
+  courseIds,
+  courseName,
+  type = "midterm",
+}) => {
   const [reports, setReports] = useState<ExamReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSlot, setSelectedSlot] = useState<ExamSlot | null>(null);
@@ -88,7 +92,9 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
           if (existingCourse) {
             // Merge students without duplicates
             const studentMap = new Map<string, Student>();
-            existingCourse.students.forEach((s) => studentMap.set(s.student_code, s));
+            existingCourse.students.forEach((s) =>
+              studentMap.set(s.student_code, s)
+            );
             c.students.forEach((s) => studentMap.set(s.student_code, s));
             existingCourse.students = Array.from(studentMap.values());
           } else {
@@ -96,32 +102,20 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
           }
         });
       } else {
-        map.set(key, { date, start_time: start, end_time: end, courses: slot.courses.map(c => ({ ...c, students: [...c.students] })) });
+        map.set(key, {
+          date,
+          start_time: start,
+          end_time: end,
+          courses: slot.courses.map((c) => ({
+            ...c,
+            students: [...c.students],
+          })),
+        });
       }
     });
 
     return Array.from(map.values());
   }, [allSlots]);
-
-  const parseDate = (raw: string) => {
-    if (!raw) return new Date(NaN);
-    const cleaned = raw.trim().replace(/\s+/g, " ");
-    const m = cleaned.match(/^([A-Za-z]+)\s+(\d{1,2})$/);
-    if (!m) {
-      const d = new Date(cleaned);
-      return isNaN(d.getTime()) ? new Date(NaN) : d;
-    }
-    const mon = m[1].slice(0, 3).toUpperCase();
-    const day = parseInt(m[2], 10);
-    const monthMap: Record<string, number> = {
-      JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, JUN: 5,
-      JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11,
-    };
-    const monthIdx = monthMap[mon] ?? NaN;
-    if (isNaN(monthIdx)) return new Date(NaN);
-    const year = new Date().getFullYear();
-    return new Date(year, monthIdx, day);
-  };
 
   const dates = useMemo(() => {
     const set = new Set<string>();
@@ -139,11 +133,13 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
       const start = parseDate(arr[0]);
       const end = parseDate(arr[arr.length - 1]);
       const filled: string[] = [];
-      let current = new Date(start);
+      const current = new Date(start);
 
       while (current <= end) {
         const day = current.getDate();
-        const month = current.toLocaleString("en-US", { month: "short" }).toUpperCase();
+        const month = current
+          .toLocaleString("en-US", { month: "short" })
+          .toUpperCase();
         filled.push(`${month}  ${day}`);
         current.setDate(current.getDate() + 1);
       }
@@ -152,8 +148,7 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
     return arr;
   }, [mergedSlots]);
 
-
-  const times = ["0800-1100", "1200-1500", "1530-1830"]
+  const times = ["0800-1100", "1200-1500", "1530-1830"];
 
   const findSlots = (dateStr: string, time: string): ExamSlot | null => {
     const [start, end] = time.split("-");
@@ -183,8 +178,29 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
 
   const formatDateForHeader = (dateStr: string) => {
     const d = parseDate(dateStr);
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
     if (isNaN(d.getTime())) {
       return { day: dateStr, date: "" };
     }
@@ -230,7 +246,8 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
   };
 
   if (loading) return <Spinner />;
-  if (!reports.length) return <div className="text-center p-4">No data available</div>;
+  if (!reports.length)
+    return <div className="text-center p-4">No data available</div>;
 
   return (
     <div className="w-full max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
@@ -239,7 +256,8 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
         style={{ backgroundColor: tableColors.primary }}
       >
         <h2 className="text-2xl font-bold">
-          {type === "midterm" ? "Midterm" : "Final"} Schedule in {courseName || "undefined"} class
+          {type === "midterm" ? "Midterm" : "Final"} Schedule in{" "}
+          {courseName || "undefined"} class
         </h2>
       </div>
 
@@ -248,7 +266,9 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
           <div
             className="grid"
             style={{
-              gridTemplateColumns: `120px repeat(${dates.length || 1}, minmax(120px, 1fr))`,
+              gridTemplateColumns: `120px repeat(${
+                dates.length || 1
+              }, minmax(120px, 1fr))`,
               gridTemplateRows: `90px repeat(${times.length}, 160px)`,
             }}
           >
@@ -271,9 +291,7 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
                     backgroundColor: tableColors.secondary,
                   }}
                 >
-                  <div className="text-base mb-1" >
-                    {header.day}
-                  </div>
+                  <div className="text-base mb-1">{header.day}</div>
                   <div className="text-sm">{header.date}</div>
                 </div>
               );
@@ -302,12 +320,9 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
                       <div
                         key={`${date}-${time}-${dateIdx}`}
                         style={{ backgroundColor: getStudentBgColor(count) }}
-                        className={
-                          `flex items-center justify-center p-4 border border-gray-200 min-h-[80px]
-                            ${count > 0 ? "cursor-pointer" : ""}`
-                        }
+                        className={`flex items-center justify-center p-4 border border-gray-200 min-h-[80px]
+                            ${count > 0 ? "cursor-pointer" : ""}`}
                         onClick={() => count > 0 && handleCellClick(slot)}
-
                       >
                         {count > 0 ? (
                           <span className="font-bold text-gray-800">
@@ -328,20 +343,32 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
               {selectedSlot && (
                 <div>
                   <div className="text-md font-bold mb-2">
-                    {selectedSlot.date}. {selectedSlot.start_time} - {selectedSlot.end_time}
+                    {selectedSlot.date}. {selectedSlot.start_time} -{" "}
+                    {selectedSlot.end_time}
                   </div>
                   <Table
-                    dataSource={getMergedCourses(selectedSlot.courses).map((c, idx) => ({
-                      key: `${c.course_id}-${idx}`,
-                      ...c,
-                    }))}
+                    dataSource={getMergedCourses(selectedSlot.courses).map(
+                      (c, idx) => ({
+                        key: `${c.course_id}-${idx}`,
+                        ...c,
+                      })
+                    )}
                     columns={[
-                      { title: "Course ID", dataIndex: "course_id", key: "course_id" },
-                      { title: "Course Name", dataIndex: "course_name", key: "course_name" },
+                      {
+                        title: "Course ID",
+                        dataIndex: "course_id",
+                        key: "course_id",
+                      },
+                      {
+                        title: "Course Name",
+                        dataIndex: "course_name",
+                        key: "course_name",
+                      },
                       {
                         title: "Students",
                         key: "students",
-                        render: (_text, record: Course) => record.students.length,
+                        render: (_text, record: Course) =>
+                          record.students.length,
                       },
                     ]}
                     pagination={false}
@@ -353,9 +380,8 @@ const ScheduleTable: React.FC<Props> = ({ courseIds, courseName, type = "midterm
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 
 export default ScheduleTable;
-

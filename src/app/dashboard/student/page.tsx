@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Layout } from "antd";
 import StudentCourseList from "@/component/dashboard/StudentCourseList";
 import StudentClassSchedule from "@/component/dashboard/StudentClassSchedule";
+import StudentExamSchedule from "@/component/dashboard/StudentExamlist";
 
 const { Content, Footer } = Layout;
 
@@ -44,6 +45,8 @@ const StudentDashboard: React.FC = () => {
         </h1>
         <StudentCourseList studentID={profile.student_id} />
         <StudentClassSchedule studentID={profile.student_id} />
+        <StudentExamSchedule studentId={profile.student_id} type="midterm" />
+        <StudentExamSchedule studentId={profile.student_id} type="final" />
       </Content>
 
       <Footer style={{ textAlign: "center" }}>
