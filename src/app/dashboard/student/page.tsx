@@ -8,12 +8,14 @@ import { Layout } from "antd";
 import StudentCourseList from "@/component/dashboard/StudentCourseList";
 import StudentClassSchedule from "@/component/dashboard/StudentClassSchedule";
 import StudentExamSchedule from "@/component/dashboard/StudentExamlist";
+import { Term } from "@/types/student/Terms";
 
 const { Content, Footer } = Layout;
 
 const StudentDashboard: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [term, setTerm] = useState<Term>({ semester: "", year: "" });
 
   useEffect(() => {
     axios
@@ -41,9 +43,9 @@ const StudentDashboard: React.FC = () => {
           Schedule Management online
         </h1>
         <h1 className="text-3xl font-semibold mb-15 text-center">
-          Academic Year X/XXXX
+          Academic Year {term.semester}/{term.year}
         </h1>
-        <StudentCourseList studentID={profile.student_id} />
+        <StudentCourseList studentID={profile.student_id} setTerm={setTerm} />
         <StudentClassSchedule studentID={profile.student_id} />
         <StudentExamSchedule studentId={profile.student_id} type="midterm" />
         <StudentExamSchedule studentId={profile.student_id} type="final" />

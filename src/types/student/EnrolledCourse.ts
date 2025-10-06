@@ -13,6 +13,8 @@ export interface EnrolledCourse {
   instructors: Instructor[];
   room: string;
   days: string;
+  semester: string;
+  year: string;
   start_time: string;
   end_time: string;
 }

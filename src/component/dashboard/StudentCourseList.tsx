@@ -1,20 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Table, Progress } from "antd";
 import { columns } from "@/constant/table/student/courseList";
 import { EnrolledCourse } from "@/types/student/EnrolledCourse";
 import axios from "axios";
+import { Term } from "@/types/student/Terms";
 
 interface Props {
   studentID: string;
+  setTerm: Dispatch<SetStateAction<Term>>;
 }
 
-const StudentCourseList: React.FC<Props> = ({ studentID }) => {
+const StudentCourseList: React.FC<Props> = ({ studentID, setTerm }) => {
   const [data, setData] = useState<EnrolledCourse[]>([]);
 
   useEffect(() => {
     axios
       .get<EnrolledCourse[]>(`/api/students/enrollments/${studentID}`)
       .then((res) => {
+        setTerm({ semester: res.data[0].semester, year: res.data[0].year });
         setData(res.data);
       })
       .catch((err) => {
@@ -28,12 +31,6 @@ const StudentCourseList: React.FC<Props> = ({ studentID }) => {
       0
     );
   }
-
-  // return (
-  //   <div className="p-3">
-  //     <pre>{JSON.stringify(data, null, 2)}</pre>
-  //   </div>
-  // );
 
   return (
     <>
