@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { Modal, Form, DatePicker, Select, message } from "antd";
+import { Modal, Form, DatePicker, message, TimePicker } from "antd";
 import axios from "axios";
 import { OrangeButton } from "./Button";
 import { TeachingCourse } from "@/types/professor/TeachingCourse";
 import { toDayjs } from "@/utils/date";
+import dayjs from "dayjs";
+
 
 interface ExamModalProps {
   record: TeachingCourse;
@@ -21,30 +23,46 @@ const ExamModal: React.FC<ExamModalProps> = ({ record, onExamUpdate }) => {
     setCurrentRecord(record);
   }, [record]);
 
-  const TIME_OPTIONS = [
-    { label: "08:00 - 11:00", value: "0800-1100" },
-    { label: "12:00 - 15:00", value: "1200-1500" },
-    { label: "15:30 - 18:30", value: "1530-1830" },
-  ];
-
 
   const handleOpen = () => {
-    const midRange =
-      currentRecord.midterm_start_time && currentRecord.midterm_end_time
-        ? `${currentRecord.midterm_start_time.replace(":", "")}-${currentRecord.midterm_end_time.replace(":", "")}`
-        : null;
-    const finalRange =
-      currentRecord.final_start_time && currentRecord.final_end_time
-        ? `${currentRecord.final_start_time.replace(":", "")}-${currentRecord.final_end_time.replace(":", "")}`
-        : null;
-
     form.setFieldsValue({
       midterm_date: toDayjs(currentRecord.midterm_date),
-      midterm_time: midRange,
+      midterm_time:
+        currentRecord.midterm_start_time && currentRecord.midterm_end_time
+          ? [
+            dayjs(
+              currentRecord.midterm_start_time.slice(0, 2) +
+              ":" +
+              currentRecord.midterm_start_time.slice(2, 4),
+              "HH:mm"
+            ),
+            dayjs(
+              currentRecord.midterm_end_time.slice(0, 2) +
+              ":" +
+              currentRecord.midterm_end_time.slice(2, 4),
+              "HH:mm"
+            ),
+          ]
+          : undefined,
       final_date: toDayjs(currentRecord.final_date),
-      final_time: finalRange,
+      final_time:
+        currentRecord.final_start_time && currentRecord.final_end_time
+          ? [
+            dayjs(
+              currentRecord.final_start_time.slice(0, 2) +
+              ":" +
+              currentRecord.final_start_time.slice(2, 4),
+              "HH:mm"
+            ),
+            dayjs(
+              currentRecord.final_end_time.slice(0, 2) +
+              ":" +
+              currentRecord.final_end_time.slice(2, 4),
+              "HH:mm"
+            ),
+          ]
+          : undefined,
     });
-
     setOpen(true);
   };
 
@@ -53,9 +71,12 @@ const ExamModal: React.FC<ExamModalProps> = ({ record, onExamUpdate }) => {
     try {
       const values = await form.validateFields();
       setLoading(true);
-
-      const [midStart, midEnd] = values.midterm_time?.split("-") || [];
-      const [finalStart, finalEnd] = values.final_time?.split("-") || [];
+      const [midStart, midEnd] = values.midterm_time
+        ? values.midterm_time.map((t: dayjs.Dayjs) => t.format("HHmm"))
+        : [];
+      const [finalStart, finalEnd] = values.final_time
+        ? values.final_time.map((t: dayjs.Dayjs) => t.format("HHmm"))
+        : [];
 
       const payload = {
         courseCode: currentRecord.course_code,
@@ -128,7 +149,11 @@ const ExamModal: React.FC<ExamModalProps> = ({ record, onExamUpdate }) => {
           </Form.Item>
 
           <Form.Item name="midterm_time" label="Midterm Time">
-            <Select options={TIME_OPTIONS} placeholder="Select a time range" />
+            <TimePicker.RangePicker
+              format="HH:mm"
+              style={{ width: "100%" }}
+              minuteStep={5}
+            />
           </Form.Item>
 
           <Form.Item name="final_date" label="Final Date">
@@ -136,7 +161,12 @@ const ExamModal: React.FC<ExamModalProps> = ({ record, onExamUpdate }) => {
           </Form.Item>
 
           <Form.Item name="final_time" label="Final Time">
-            <Select options={TIME_OPTIONS} placeholder="Select a time range" />
+            <TimePicker.RangePicker
+              format="HH:mm"
+              style={{ width: "100%" }}
+              minuteStep={5}
+            />
+
           </Form.Item>
         </Form>
       </Modal>
