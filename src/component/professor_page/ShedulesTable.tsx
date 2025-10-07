@@ -4,7 +4,7 @@ import axios from "axios";
 import Spinner from "../Spinner";
 import { tableColors } from "@/types/Color";
 import { getHeaderTextColor, getStudentBgColor } from "@/utils/color";
-import { formatTime, parseDate } from "@/utils/date";
+import { parseDate } from "@/utils/date";
 import { Modal, Table } from "antd";
 
 interface Student {
@@ -148,33 +148,6 @@ const ScheduleTable: React.FC<Props> = ({
     return arr;
   }, [mergedSlots]);
 
-  const times = ["0800-1100", "1200-1500", "1530-1830"];
-
-  const findSlots = (dateStr: string, time: string): ExamSlot | null => {
-    const [start, end] = time.split("-");
-    const targetDate = parseDate(dateStr);
-
-    const matchedSlots = mergedSlots.filter((s) => {
-      const slotDate = parseDate(s.date);
-      return (
-        slotDate.getTime() === targetDate.getTime() &&
-        (s.start_time ?? "").trim() === (start ?? "").trim() &&
-        (s.end_time ?? "").trim() === (end ?? "").trim()
-      );
-    });
-
-    if (!matchedSlots.length) return null;
-
-    const mergedCourses: Course[] = [];
-    matchedSlots.forEach((slot) => mergedCourses.push(...slot.courses));
-
-    return {
-      date: dateStr,
-      start_time: start,
-      end_time: end,
-      courses: mergedCourses,
-    };
-  };
 
   const formatDateForHeader = (dateStr: string) => {
     const d = parseDate(dateStr);
@@ -262,126 +235,174 @@ const ScheduleTable: React.FC<Props> = ({
       </div>
 
       <div className="overflow-x-auto">
-        <div className="inline-block min-w-full">
+        <div className="inline-block min-w-full relative max-h-[75vh]">
+          {/* Grid layout: hours on Y axis, dates on X axis */}
           <div
             className="grid"
             style={{
-              gridTemplateColumns: `120px repeat(${
-                dates.length || 1
-              }, minmax(120px, 1fr))`,
-              gridTemplateRows: `90px repeat(${times.length}, 160px)`,
+              gridTemplateColumns: `80px repeat(${dates.length}, minmax(160px, 1fr))`,
+              gridTemplateRows: `repeat(25, 80px)`, // 24 hours
             }}
           >
+            {/* Top-left cell: Time header */}
             <div
-              className="text-white font-bold flex items-center justify-center p-4 border border-gray-200"
-              style={{ backgroundColor: tableColors.primary }}
+              className="border-b border-r border-gray-200 flex items-center justify-center font-semibold sticky top-0 z-10 bg-white"
+              style={{ gridColumn: 1, gridRow: 1 }}
             >
               Time
             </div>
 
+            {/* Date headers */}
             {dates.map((date, idx) => {
               const header = formatDateForHeader(date);
               const textColor = getHeaderTextColor(header.day);
               return (
                 <div
-                  key={date + idx}
-                  className={`font-semibold p-4 border border-gray-200 text-center`}
+                  key={`header-${idx}`}
+                  className="border-b border-gray-200 flex flex-col items-center justify-center p-2 text-center font-semibold sticky top-0 z-10"
                   style={{
+                    gridColumn: idx + 2,
+                    gridRow: 1,
                     color: textColor,
                     backgroundColor: tableColors.secondary,
                   }}
                 >
-                  <div className="text-base mb-1">{header.day}</div>
+                  <div className="text-base">{header.day}</div>
                   <div className="text-sm">{header.date}</div>
                 </div>
               );
             })}
+            {/* Time column */}
+            {Array.from({ length: 24 }).map((_, hour) => (
+              <div
+                key={`time-${hour}`}
+                className="border-b border-gray-200 border-r flex items-start justify-center text-sm text-gray-600 pt-1"
+                style={{
+                  gridColumn: 1,
+                  gridRow: hour + 2,
+                }}
+              >
+                {hour.toString().padStart(2, "0")}:00
+              </div>
+            ))}
 
-            {times.map((time) => {
-              const [startRaw, endRaw] = time.split("-");
-              const start = formatTime(startRaw);
-              const end = formatTime(endRaw);
-              return (
-                <React.Fragment key={time}>
-                  <div
-                    className="text-white font-bold flex flex-col items-center justify-center p-4 border border-gray-200 gap-1"
-                    style={{ backgroundColor: tableColors.primary }}
-                  >
-                    <div>{start}</div>
-                    <div>-</div>
-                    <div>{end}</div>
-                  </div>
 
-                  {dates.map((date, dateIdx) => {
-                    const slot = findSlots(date, time);
-                    const count = getTotalStudents(slot);
+            {/* Time grid cells */}
+            {dates.map((_, dateIdx) =>
+              Array.from({ length: 24 }).map((_, hour) => (
+                <div
+                  key={`cell-${dateIdx}-${hour}`}
+                  className="border-b border-r border-gray-100 relative"
+                  style={{
+                    gridColumn: dateIdx + 2,
+                    gridRow: hour + 2,
+                  }}
+                ></div>
+              ))
+            )}
+          </div>
 
-                    return (
-                      <div
-                        key={`${date}-${time}-${dateIdx}`}
-                        style={{ backgroundColor: getStudentBgColor(count) }}
-                        className={`flex items-center justify-center p-4 border border-gray-200 min-h-[80px]
-                            ${count > 0 ? "cursor-pointer" : ""}`}
-                        onClick={() => count > 0 && handleCellClick(slot)}
-                      >
-                        {count > 0 ? (
-                          <span className="font-bold text-gray-800">
-                            {count} {count === 1 ? "person" : "persons"}
-                          </span>
-                        ) : null}
-                      </div>
-                    );
-                  })}
-                </React.Fragment>
-              );
-            })}
-            <Modal
-              open={isModalOpen}
-              onCancel={() => setIsModalOpen(false)}
-              footer={null}
+          {/* Exams overlay */}
+          <div className="absolute top-0 left-[80px] right-0 bottom-0">
+            <div
+              className="grid"
+              style={{
+                gridTemplateColumns: `repeat(${dates.length}, minmax(160px, 1fr))`,
+                position: "relative",
+                height: "1920px",
+              }}
             >
-              {selectedSlot && (
-                <div>
-                  <div className="text-md font-bold mb-2">
-                    {selectedSlot.date}. {selectedSlot.start_time} -{" "}
-                    {selectedSlot.end_time}
+              {dates.map((date, dateIdx) => {
+                const dailySlots = mergedSlots.filter(
+                  (s) => parseDate(s.date).getTime() === parseDate(date).getTime()
+                );
+
+                return (
+                  <div key={`col-${dateIdx}`} className="relative">
+                    {dailySlots.map((slot, slotIdx) => {
+                      const startH = parseInt(slot.start_time.slice(0, 2), 10);
+                      const startM = parseInt(slot.start_time.slice(2, 4), 10);
+                      const endH = parseInt(slot.end_time.slice(0, 2), 10);
+                      const endM = parseInt(slot.end_time.slice(2, 4), 10);
+
+                      // Convert time to Y position (pixels)
+                      const HEADER_HEIGHT = 80;
+                      const startY = HEADER_HEIGHT + (startH + startM / 60) * 80;
+                      const endY = HEADER_HEIGHT + (endH + endM / 60) * 80;
+                      const height = Math.max(endY - startY, 40);
+
+                      const count = getTotalStudents(slot);
+
+                      return (
+                        <div
+                          key={`exam-${dateIdx}-${slotIdx}`}
+                          className={`
+    absolute left-1 right-1 text-xs p-2 text-[#303030] shadow 
+    flex flex-col items-center justify-center overflow-hidden cursor-pointer
+    transition-all duration-150 ease-in-out
+    z-[${slotIdx}] hover:z-[9999]
+  `}
+                          style={{
+                            top: startY,
+                            height,
+                            backgroundColor: getStudentBgColor(count) + "99",
+                          }}
+                          onMouseEnter={(e) => {
+                            (e.currentTarget as HTMLDivElement).style.backgroundColor = getStudentBgColor(count);
+                          }}
+                          onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLDivElement).style.backgroundColor = getStudentBgColor(count) + "99";
+                          }}
+                          onClick={() => handleCellClick(slot)}
+                        >
+                          <div className="font-bold text-[16px] mt-1">{count} students</div>
+                          <div className="text-[14px]">{`${slot.start_time}-${slot.end_time}`}</div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <Table
-                    dataSource={getMergedCourses(selectedSlot.courses).map(
-                      (c, idx) => ({
-                        key: `${c.course_id}-${idx}`,
-                        ...c,
-                      })
-                    )}
-                    columns={[
-                      {
-                        title: "Course ID",
-                        dataIndex: "course_id",
-                        key: "course_id",
-                      },
-                      {
-                        title: "Course Name",
-                        dataIndex: "course_name",
-                        key: "course_name",
-                      },
-                      {
-                        title: "Students",
-                        key: "students",
-                        render: (_text, record: Course) =>
-                          record.students.length,
-                      },
-                    ]}
-                    pagination={false}
-                    size="small"
-                  />
-                </div>
-              )}
-            </Modal>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      <Modal
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
+      >
+        {selectedSlot && (
+          <div>
+            <div className="text-md font-bold mb-2">
+              {selectedSlot.date}. {selectedSlot.start_time} -{" "}
+              {selectedSlot.end_time}
+            </div>
+            <Table
+              dataSource={getMergedCourses(selectedSlot.courses).map((c, idx) => ({
+                key: `${c.course_id}-${idx}`,
+                ...c,
+              }))}
+              columns={[
+                { title: "Course ID", dataIndex: "course_id", key: "course_id" },
+                { title: "Course Name", dataIndex: "course_name", key: "course_name" },
+                {
+                  title: "Students",
+                  key: "students",
+                  render: (_text, record: Course) => record.students.length,
+                },
+              ]}
+              pagination={false}
+              size="small"
+            />
+          </div>
+        )}
+      </Modal>
     </div>
   );
+
 };
 
 export default ScheduleTable;
