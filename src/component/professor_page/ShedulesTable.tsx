@@ -235,7 +235,7 @@ const ScheduleTable: React.FC<Props> = ({
       </div>
 
       <div className="overflow-x-auto">
-        <div className="inline-block min-w-full relative max-h-[75vh]">
+        <div className="inline-block min-w-full relative max-h-[80vh]">
           {/* Grid layout: hours on Y axis, dates on X axis */}
           <div
             className="grid"
