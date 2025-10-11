@@ -1,16 +1,14 @@
 "use client";
 import "@ant-design/v5-patch-for-react-19";
-import React, { useState } from "react";
-import { Typography, Table, Button, Select, Tag } from "antd";
+import React, { useEffect, useState } from "react";
+import { Typography, Table, Tag } from "antd";
 import ImportCourseContent from "./content/ImportCourses";
 import ImportExamContent from "./content/ImportExam";
-import FetchStatusButton from "./content/FetchStatusButton";
 import { Status } from "@/types/admin/ScrapeJob";
 import UploadExcelButton from "./content/UploadExcelButton";
 import UploadPdf from "./content/UploadPdf";
 
 const { Text } = Typography;
-const { Option } = Select;
 
 interface JobRow {
   key: string;
@@ -34,11 +32,11 @@ function getStatusColor(status?: string) {
   }
 }
 
-interface prop {
+interface Prop {
   setError: (error: string) => void;
 }
 
-export default function AdminDashboard({ setError }: prop) {
+export default function AdminDashboard({ setError }: Prop) {
   // scrapeCourseJob
   const [scrapeCourseJobID, setScrapeCourseJobID] = useState<number>();
   const [scrapeCourseJobStatus, setScrapeCourseJobStatus] =
@@ -51,6 +49,60 @@ export default function AdminDashboard({ setError }: prop) {
 
   const [uploadExcelStatus, setUploadExcelStatus] = useState<Status>("waiting");
   const [uploadPdfStatus, setUploadPdfStatus] = useState<Status>("waiting");
+
+  useEffect(() => {
+    if (!scrapeCourseJobID) return;
+
+    const source = new EventSource(
+      `/api/admin/scrape/course/status/${scrapeCourseJobID}`
+    );
+
+    source.onmessage = (e) => {
+      const job = JSON.parse(e.data);
+      setScrapeCourseJobStatus(job.Status);
+    };
+
+    source.addEventListener("done", (e) => {
+      const job = JSON.parse(e.data);
+      setScrapeCourseJobStatus(job.Status);
+      source.close();
+    });
+
+    source.onerror = (err) => {
+      console.error("SSE error for course job:", err);
+      setError("SSE connection error for course job");
+      source.close();
+    };
+
+    return () => source.close();
+  }, [scrapeCourseJobID, setError]);
+
+  useEffect(() => {
+    if (!scrapeExamJobID) return;
+
+    const source = new EventSource(
+      `/api/admin/scrape/exams/status/${scrapeExamJobID}`
+    );
+
+    source.onmessage = (e) => {
+      const job = JSON.parse(e.data);
+      setScrapeExamJobStatus(job.Status);
+    };
+
+    source.addEventListener("done", (e) => {
+      const job = JSON.parse(e.data);
+      setScrapeExamJobStatus(job.Status);
+      source.close();
+    });
+
+    source.onerror = (err) => {
+      console.error("SSE error for exam job:", err);
+      setError("SSE connection error for exam job");
+      source.close();
+    };
+
+    return () => source.close();
+  }, [scrapeExamJobID, setError]);
 
   const jobs: JobRow[] = [
     {
@@ -157,18 +209,12 @@ export default function AdminDashboard({ setError }: prop) {
         showHeader={true}
         bordered={false}
       />
-      <div className="flex flex-row items-strat justify-between my-5">
+      <div className="flex flex-row items-start justify-between my-5">
         <Text type="secondary" style={{ color: "#ae9eb3" }}>
           Please follow by step wait before process completed.
         </Text>
-        <FetchStatusButton
-          setError={setError}
-          scrapeCourseJobID={scrapeCourseJobID}
-          setScrapeCourseJobStatus={setScrapeCourseJobStatus}
-          scrapeExamJobID={scrapeExamJobID}
-          setScrapeExamJobStatus={setScrapeExamJobStatus}
-        />
       </div>
     </div>
   );
 }
+
