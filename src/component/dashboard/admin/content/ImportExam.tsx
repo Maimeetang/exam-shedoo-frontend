@@ -54,7 +54,7 @@ export default function ImportExamContent({
         onChange={(e) => setAcademicYear(e.target.value)}
       />
       <span className="block text-xs text-gray-400">
-        Ex. term 1, Year: 2568
+        Ex. term 1, Year: 2568 will be 168
       </span>
       <Button
         className="!w-24"
