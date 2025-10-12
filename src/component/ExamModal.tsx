@@ -1,28 +1,27 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Form, DatePicker, message, TimePicker } from "antd";
 import axios from "axios";
 import { OrangeButton } from "./Button";
 import { TeachingCourse } from "@/types/professor/TeachingCourse";
 import { toDayjs } from "@/utils/date";
 import dayjs from "dayjs";
-
+import { useAtom } from "jotai";
+import { coursesAtom } from "@/atoms/ProfessorCourseList";
 
 interface ExamModalProps {
   record: TeachingCourse;
-  onExamUpdate: (updated: TeachingCourse) => void;
 }
 
-const ExamModal: React.FC<ExamModalProps> = ({ record, onExamUpdate }) => {
+const ExamModal: React.FC<ExamModalProps> = ({ record }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-
   const [currentRecord, setCurrentRecord] = useState<TeachingCourse>(record);
+  const [, setCourses] = useAtom(coursesAtom);
 
   useEffect(() => {
     setCurrentRecord(record);
   }, [record]);
-
 
   const handleOpen = () => {
     form.setFieldsValue({
@@ -66,7 +65,6 @@ const ExamModal: React.FC<ExamModalProps> = ({ record, onExamUpdate }) => {
     setOpen(true);
   };
 
-
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
@@ -94,7 +92,10 @@ const ExamModal: React.FC<ExamModalProps> = ({ record, onExamUpdate }) => {
       let updatedRecord: TeachingCourse;
 
       if (currentRecord.exam_id) {
-        await axios.put(`/api/professors/course_exams/${currentRecord.exam_id}`, payload);
+        await axios.put(
+          `/api/professors/course_exams/${currentRecord.exam_id}`,
+          payload
+        );
         message.success("Exam updated successfully!");
         updatedRecord = {
           ...currentRecord,
@@ -107,7 +108,6 @@ const ExamModal: React.FC<ExamModalProps> = ({ record, onExamUpdate }) => {
         };
       } else {
         const res = await axios.post("/api/professors/course_exams/examdate", payload);
-        console.log(res);
         message.success("Exam created successfully!");
         updatedRecord = {
           ...currentRecord,
@@ -121,9 +121,10 @@ const ExamModal: React.FC<ExamModalProps> = ({ record, onExamUpdate }) => {
         };
       }
 
-      onExamUpdate(updatedRecord);
+      setCourses(prev =>
+        prev.map(c => c.course_id === updatedRecord.course_id ? updatedRecord : c)
+      );
       setCurrentRecord(updatedRecord);
-
       setOpen(false);
     } catch (err) {
       console.error(err);
@@ -149,11 +150,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ record, onExamUpdate }) => {
           </Form.Item>
 
           <Form.Item name="midterm_time" label="Midterm Time">
-            <TimePicker.RangePicker
-              format="HH:mm"
-              style={{ width: "100%" }}
-              minuteStep={5}
-            />
+            <TimePicker.RangePicker format="HH:mm" style={{ width: "100%" }} minuteStep={5} />
           </Form.Item>
 
           <Form.Item name="final_date" label="Final Date">
@@ -161,12 +158,7 @@ const ExamModal: React.FC<ExamModalProps> = ({ record, onExamUpdate }) => {
           </Form.Item>
 
           <Form.Item name="final_time" label="Final Time">
-            <TimePicker.RangePicker
-              format="HH:mm"
-              style={{ width: "100%" }}
-              minuteStep={5}
-            />
-
+            <TimePicker.RangePicker format="HH:mm" style={{ width: "100%" }} minuteStep={5} />
           </Form.Item>
         </Form>
       </Modal>

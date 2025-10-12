@@ -1,11 +1,12 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import axios from "axios";
 import Spinner from "../Spinner";
 import { tableColors } from "@/types/Color";
 import { getHeaderTextColor, getStudentBgColor } from "@/utils/color";
 import { parseDate } from "@/utils/date";
 import { Modal, Table } from "antd";
+import { useQuery } from "@tanstack/react-query";
 
 interface Student {
   student_code: string;
@@ -43,27 +44,25 @@ const ScheduleTable: React.FC<Props> = ({
   courseName,
   type = "midterm",
 }) => {
-  const [reports, setReports] = useState<ExamReport[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedSlot, setSelectedSlot] = useState<ExamSlot | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const promises = courseIds.map((id) =>
-          axios.get<ExamReport>(`/api/professors/course_exams/report/${id}`)
-        );
-        const responses = await Promise.all(promises);
-        setReports(responses.map((r) => r.data));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchReports();
-  }, [courseIds]);
+  const { data: reports = [], isLoading } = useQuery<ExamReport[], Error>({
+    queryKey: ["examReports", courseIds],
+    queryFn: async () => {
+      if (!courseIds || courseIds.length === 0) return [];
+      const responses = await Promise.all(
+        courseIds.map((id) =>
+          axios
+            .get<ExamReport>(`/api/professors/course_exams/report/${id}`)
+            .then((res) => res.data)
+        )
+      );
+      return responses;
+    },
+    enabled: courseIds.length > 0,
+    refetchOnWindowFocus: false,
+  });
 
   const allSlots: ExamSlot[] = useMemo(() => {
     return reports.flatMap((r) => r[type] ?? []);
@@ -218,7 +217,7 @@ const ScheduleTable: React.FC<Props> = ({
     setIsModalOpen(true);
   };
 
-  if (loading) return <Spinner />;
+  if (isLoading) return <Spinner />;
   if (!reports.length)
     return <div className="text-center p-4">No data available</div>;
 

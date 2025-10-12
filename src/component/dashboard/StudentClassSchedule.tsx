@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useRef } from "react";
 import ExportButton from "@/component/dashboard/ExportButton";
 import "@ant-design/v5-patch-for-react-19";
 import axios from "axios";
 import { EnrolledCourse } from "@/types/student/EnrolledCourse";
 import { formatTimeRange } from "@/utils/date";
 import { dayColors } from "@/types/Color";
+import { useQuery } from '@tanstack/react-query';
+
 
 const dayMap: Record<string, string> = {
   M: "Monday",
@@ -51,18 +53,17 @@ interface Props {
 }
 
 const StudentClassSchedule: React.FC<Props> = ({ studentID }) => {
-  const [courses, setCourses] = useState<EnrolledCourse[]>([]);
-
-  useEffect(() => {
-    axios
-      .get<EnrolledCourse[]>(`/api/students/enrollments/${studentID}`)
-      .then((res) => {
-        setCourses(res.data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, [studentID]);
+  const { data: courses = [] } = useQuery({
+    queryKey: ['student-enrollments', studentID],
+    queryFn: async () => {
+      const res = await axios.get<EnrolledCourse[]>(
+        `/api/students/enrollments/${studentID}`
+      );
+      return res.data;
+    },
+    enabled: !!studentID,
+    refetchOnWindowFocus: false,
+  });
 
   const tableRef = useRef<HTMLDivElement>(null);
 

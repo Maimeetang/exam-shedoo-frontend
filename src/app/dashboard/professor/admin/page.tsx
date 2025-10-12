@@ -1,34 +1,22 @@
 "use client";
 import "@ant-design/v5-patch-for-react-19";
-import React, { useEffect, useState } from "react";
 import { Layout, Typography, Divider } from "antd";
-import { Profile } from "@/types/Profile";
-import axios from "axios";
 import Spinner from "@/component/Spinner";
 import { AdminList } from "@/component/dashboard/admin/AdminList";
 import Navbar from "@/component/Navbar";
 import SetupSystem from "@/component/dashboard/admin/SetupSystem";
+import { useProfile } from "@/custom_hooks/use-profile";
+import { useState } from "react";
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
 
 const AdminDashboard: React.FC = () => {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [error, setError] = useState<string>("");
-
-  useEffect(() => {
-    axios
-      .get<Profile>("/api/auth/profile")
-      .then((res) => {
-        setProfile(res.data);
-      })
-      .catch((err) => {
-        setError(err.message || "Something went wrong");
-      });
-  }, []);
+  const { profile, error } = useProfile();
+  const [_, setError] = useState<string>("");
 
   if (error) {
-    return <div className="p-3">Error: {error}</div>;
+    return <div className="p-3">Error: {error.message}</div>;
   }
 
   if (!profile) return <Spinner />;

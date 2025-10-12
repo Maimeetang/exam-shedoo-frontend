@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import ExportButton from "@/component/dashboard/ExportButton";
 import "@ant-design/v5-patch-for-react-19";
 import axios from "axios";
@@ -7,6 +7,7 @@ import Spinner from "../Spinner";
 import { tableColors, dayColors } from "@/types/Color";
 import { formatTime, parseDate } from "@/utils/date";
 import type { ExamStudent } from "@/types/student/Examlist";
+import { useQuery } from "@tanstack/react-query";
 
 interface Props {
   studentId: string;
@@ -96,24 +97,17 @@ const StudentExamSchedule: React.FC<Props> = ({
   studentId,
   type = "midterm",
 }) => {
-  const [exams, setExams] = useState<ExamStudent[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchExams = async () => {
-      try {
-        const res = await axios.get<ExamStudent[]>(
-          `/api/students/exams/${studentId}`
-        );
-        setExams(res.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchExams();
-  }, [studentId]);
+  const { data: exams = [], isLoading } = useQuery({
+    queryKey: ['student-exams', studentId],
+    queryFn: async () => {
+      const res = await axios.get<ExamStudent[]>(
+        `/api/students/exams/${studentId}`
+      );
+      return res.data;
+    },
+    enabled: !!studentId,
+    refetchOnWindowFocus: false,
+  });
 
   const filtered = useMemo(() => {
     return exams.filter((e) =>
@@ -188,7 +182,7 @@ const StudentExamSchedule: React.FC<Props> = ({
     });
   };
 
-  if (loading) return <Spinner />;
+  if (isLoading) return <Spinner />;
 
   return (
     <div className="w-full max-w-7xl mx-auto bg-white rounded-xl my-20 shadow-lg overflow-hidden">
@@ -206,9 +200,8 @@ const StudentExamSchedule: React.FC<Props> = ({
           <div
             className="grid"
             style={{
-              gridTemplateColumns: `120px repeat(${
-                dates.length || 1
-              }, minmax(120px, 1fr))`,
+              gridTemplateColumns: `120px repeat(${dates.length || 1
+                }, minmax(120px, 1fr))`,
               gridTemplateRows: `90px repeat(${times.length}, 140px)`,
             }}
           >
@@ -281,9 +274,8 @@ const StudentExamSchedule: React.FC<Props> = ({
       <div className="flex justify-end px-4 py-2 rounded-b-md">
         <ExportButton
           targetRef={tableRef as React.RefObject<HTMLElement>}
-          fileName={`course_schedule_${
-            type === "midterm" ? "Midterm" : "Final"
-          }.png`}
+          fileName={`course_schedule_${type === "midterm" ? "Midterm" : "Final"
+            }.png`}
         />
       </div>
     </div>

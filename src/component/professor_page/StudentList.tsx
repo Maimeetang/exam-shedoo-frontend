@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+"use client";
+
+import React, { useState, useMemo } from "react";
 import { Table, Input } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { EnrolledStudent } from "@/types/professor/EnrolledStudent";
 import Link from "next/link";
 import { BlueButton } from "../Button";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 interface Props {
   courseIDs: string[];
@@ -12,49 +15,36 @@ interface Props {
 }
 
 const StudentList: React.FC<Props> = ({ courseIDs, courseName }) => {
-  const [data, setData] = useState<EnrolledStudent[]>([]);
-  const [filteredData, setFilteredData] = useState<EnrolledStudent[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    if (!courseIDs || courseIDs.length === 0) return;
+  const { data: students = [], isLoading, error } = useQuery<EnrolledStudent[], Error>({
+    queryKey: ["students", courseIDs],
+    queryFn: async () => {
+      if (!courseIDs || courseIDs.length === 0) return [];
+      const requests = courseIDs.map((id) =>
+        axios
+          .get<EnrolledStudent[]>(`/api/professors/courses/enrolled_students/${id}`)
+          .then((res) => res.data)
+          .catch(() => [])
+      );
+      const allArrays = await Promise.all(requests);
+      const allStudents = allArrays.flat();
 
-    const fetchAllStudents = async () => {
-      try {
-        const requests = courseIDs.map((id) =>
-          axios
-            .get<EnrolledStudent[]>(
-              `/api/professors/courses/enrolled_students/${id}`
-            )
-            .then((res) => res.data)
-            .catch((err) => {
-              console.warn(`Failed to fetch course ${id}: ${err.message}`);
-              return [];
-            })
-        );
+      // Deduplicate by student_code
+      return [...new Map(allStudents.map((s) => [s.student_code, s])).values()];
+    },
+    refetchOnWindowFocus: false,
+    enabled: courseIDs.length > 0,
+  });
 
-        const allStudentsArrays = await Promise.all(requests);
-        const allStudents = allStudentsArrays.flat();
-
-        const uniqueStudents = [
-          ...new Map(allStudents.map((s) => [s.student_code, s])).values(),
-        ];
-
-        setData(uniqueStudents);
-        setFilteredData(uniqueStudents);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchAllStudents();
-  }, [courseIDs]);
+  const filteredData: EnrolledStudent[] = useMemo(() => {
+    return students.filter((student: EnrolledStudent) =>
+      student.student_code.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [students, searchTerm]);
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    const filtered = data.filter((student) =>
-      student.student_code.includes(value)
-    );
-    setFilteredData(filtered);
   };
 
   const columns: ColumnsType<EnrolledStudent> = [
@@ -71,6 +61,9 @@ const StudentList: React.FC<Props> = ({ courseIDs, courseName }) => {
     },
   ];
 
+  if (isLoading) return <div>Loading students...</div>;
+  if (error) return <div className="p-3">Error: {error.message}</div>;
+
   return (
     <div className="flex justify-center w-full mt-10">
       <div className="w-full max-w-4xl">
@@ -85,7 +78,6 @@ const StudentList: React.FC<Props> = ({ courseIDs, courseName }) => {
           />
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto rounded-xl shadow-lg bg-white">
           <Table
             columns={columns}

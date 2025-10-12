@@ -1,9 +1,10 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { Table, Progress } from "antd";
 import { columns } from "@/constant/table/student/courseList";
 import { EnrolledCourse } from "@/types/student/EnrolledCourse";
 import axios from "axios";
 import { Term } from "@/types/student/Terms";
+import { useQuery } from "@tanstack/react-query";
 
 interface Props {
   studentID: string;
@@ -11,19 +12,23 @@ interface Props {
 }
 
 const StudentCourseList: React.FC<Props> = ({ studentID, setTerm }) => {
-  const [data, setData] = useState<EnrolledCourse[]>([]);
+  const { data = [] } = useQuery({
+    queryKey: ['student-enrollments', studentID],
+    queryFn: async () => {
+      const res = await axios.get<EnrolledCourse[]>(
+        `/api/students/enrollments/${studentID}`
+      );
+      return res.data;
+    },
+    enabled: !!studentID,
+    refetchOnWindowFocus: false,
+  });
 
   useEffect(() => {
-    axios
-      .get<EnrolledCourse[]>(`/api/students/enrollments/${studentID}`)
-      .then((res) => {
-        setTerm({ semester: res.data[0].semester, year: res.data[0].year });
-        setData(res.data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, [studentID]);
+    if (data.length > 0) {
+      setTerm({ semester: data[0].semester, year: data[0].year });
+    }
+  }, [data, setTerm]);
 
   function creditSum() {
     return data.reduce(
@@ -31,7 +36,6 @@ const StudentCourseList: React.FC<Props> = ({ studentID, setTerm }) => {
       0
     );
   }
-
   return (
     <>
       <div className="w-full max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
@@ -50,7 +54,7 @@ const StudentCourseList: React.FC<Props> = ({ studentID, setTerm }) => {
           </div>
         </div>
       </div>
-      <div className="flex max-w-7xl flex-col mx-auto mx-5 my-10 center">
+      <div className="flex max-w-7xl flex-col mx-auto my-10 center">
         <p>Enrolled: {creditSum()} / 21</p>
         <Progress
           percent={Math.floor((creditSum() / 21) * 100)}

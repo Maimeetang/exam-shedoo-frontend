@@ -2,29 +2,20 @@
 import Navbar from "@/component/Navbar";
 import ScheduleTable from "@/component/professor_page/ShedulesTable";
 import Spinner from "@/component/Spinner";
-import { Profile } from "@/types/Profile";
+import { useProfile } from "@/custom_hooks/use-profile";
 import Layout, { Footer } from "antd/es/layout/layout";
-import axios from "axios";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 
 const ExamSchedules: React.FC = () => {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { profile, error } = useProfile();
   const query = useSearchParams();
 
   const courseIdsQuery = query.get("ids");
   const courseIDs = courseIdsQuery ? courseIdsQuery.split(",") : [];
   const courseName = query.get("course_name");
 
-  useEffect(() => {
-    axios
-      .get<Profile>("/api/auth/profile")
-      .then((res) => setProfile(res.data))
-      .catch((err) => setError(err.message || "Something went wrong"));
-  }, []);
 
-  if (error) return <div className="p-3">Error: {error}</div>;
+  if (error) return <div className="p-3">Error: {error.message}</div>;
   if (!profile) return <Spinner />;
 
   return (

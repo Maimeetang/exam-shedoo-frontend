@@ -1,35 +1,23 @@
 "use client";
 import Navbar from "@/component/Navbar";
 import Spinner from "@/component/Spinner";
-import { Profile } from "@/types/Profile";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Layout } from "antd";
 import StudentCourseList from "@/component/dashboard/StudentCourseList";
 import StudentClassSchedule from "@/component/dashboard/StudentClassSchedule";
 import StudentExamSchedule from "@/component/dashboard/StudentExamlist";
 import { Term } from "@/types/student/Terms";
+import { useProfile } from "@/custom_hooks/use-profile";
 
 const { Content, Footer } = Layout;
 
 const StudentDashboard: React.FC = () => {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { profile, error } = useProfile();
   const [term, setTerm] = useState<Term>({ semester: "", year: "" });
 
-  useEffect(() => {
-    axios
-      .get<Profile>("/api/auth/profile")
-      .then((res) => {
-        setProfile(res.data);
-      })
-      .catch((err) => {
-        setError(err.message || "Something went wrong");
-      });
-  }, []);
 
   if (error) {
-    return <div className="p-3">Error: {error}</div>;
+    return <div className="p-3">Error: {error.message}</div>;
   }
 
   if (!profile) return <Spinner />;

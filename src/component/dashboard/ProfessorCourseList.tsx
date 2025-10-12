@@ -1,45 +1,50 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Table } from "antd";
 import { getColumns } from "@/constant/table/professor/courseList";
 import { TeachingCourse } from "@/types/professor/TeachingCourse";
-import axios from "axios";
 import Link from "next/link";
 import { GreenButton } from "../Button";
 import "@ant-design/v5-patch-for-react-19";
+import { useAtom } from "jotai";
+import { useQuery } from "@tanstack/react-query";
+import { coursesAtom, mergeModeAtom, selectedRowKeysAtom } from "@/atoms/ProfessorCourseList";
+
 
 interface Props {
   lecturer: string;
 }
 
 const ProfessorCourseList: React.FC<Props> = ({ lecturer }) => {
-  const [data, setData] = useState<TeachingCourse[]>([]);
-  const [mergeMode, setMergeMode] = useState(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [courses, setCourses] = useAtom(coursesAtom);
+  const [mergeMode, setMergeMode] = useAtom(mergeModeAtom);
+  const [selectedRowKeys, setSelectedRowKeys] = useAtom(selectedRowKeysAtom);
 
-  useEffect(() => {
-    axios
-      .get<TeachingCourse[]>(`/api/professors/courses?lecturer=${lecturer}`)
-      .then((res) => {
-        setData(res.data);
-      })
-      .catch((err) => console.error(err));
-  }, [lecturer]);
+  const fetchCourses = async (lecturer: string): Promise<TeachingCourse[]> => {
+    const res = await fetch(`/api/professors/courses?lecturer=${lecturer}`);
+    if (!res.ok) throw new Error("Failed to fetch courses");
+    const data: TeachingCourse[] = await res.json();
+    setCourses(data);
+    return data;
+  };
+
+  const { isLoading, error } = useQuery<TeachingCourse[], Error>({
+    queryKey: ["courses", lecturer],
+    queryFn: () => fetchCourses(lecturer),
+    refetchOnWindowFocus: false,
+  });
 
   const toggleMergeMode = () => {
     setMergeMode(!mergeMode);
     setSelectedRowKeys([]);
   };
 
-  const handleExamUpdate = (updated: TeachingCourse) => {
-    setData((prev) =>
-      prev.map((c) => (c.course_id === updated.course_id ? updated : c))
-    );
-  };
-
   const rowSelection = {
     selectedRowKeys,
     onChange: (keys: React.Key[]) => setSelectedRowKeys(keys),
   };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <div className="rounded-md overflow-hidden shadow-lg mx-5">
@@ -56,8 +61,8 @@ const ProfessorCourseList: React.FC<Props> = ({ lecturer }) => {
       <div className="overflow-x-auto">
         <div className="min-w-[800px] bg-white">
           <Table<TeachingCourse>
-            columns={getColumns(handleExamUpdate)}
-            dataSource={data}
+            columns={getColumns()} // ExamModal now reads coursesAtom directly
+            dataSource={courses}
             rowKey="course_id"
             pagination={false}
             rowSelection={mergeMode ? rowSelection : undefined}
@@ -73,7 +78,7 @@ const ProfessorCourseList: React.FC<Props> = ({ lecturer }) => {
                         course_name: selectedRowKeys
                           .map(
                             (key) =>
-                              data.find((c) => c.course_id === key)?.course_name
+                              courses.find((c) => c.course_id === key)?.course_name
                           )
                           .filter(Boolean)
                           .join(" and "),

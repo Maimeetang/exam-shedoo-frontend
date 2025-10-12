@@ -1,39 +1,25 @@
 "use client";
-import axios from "axios";
-import { Profile } from "@/types/Profile";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import Spinner from "@/component/Spinner";
+
+import { redirect } from "next/navigation";
+import { useProfile } from "@/custom_hooks/use-profile";
 
 export default function DashboardLayout() {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+  const { profile, error } = useProfile();
 
-  useEffect(() => {
-    axios
-      .get<Profile>("/api/auth/profile")
-      .then((res) => {
-        const profile = res.data;
-        switch (profile.role) {
-          case "student":
-            router.push("/dashboard/student");
-            break;
-          case "professor":
-          case "admin":
-            router.push("/dashboard/professor");
-            break;
-          default:
-            router.push("/");
-        }
-      })
-      .catch((err) => {
-        setError(err.message || "Something went wrong");
-      });
-  }, []);
-
-  if (error) {
-    return <div className="p-3">Error: {error}</div>;
+  if (profile) {
+    switch (profile?.role) {
+      case "student":
+        redirect("/dashboard/student");
+      case "professor":
+      case "admin":
+        redirect("/dashboard/professor");
+      default:
+        redirect("/");
+    }
   }
 
-  return <Spinner />;
+  if (error) return <div className="p-3">Error: {error.message}</div>;
+
+  return null;
 }
+
