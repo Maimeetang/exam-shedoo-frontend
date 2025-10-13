@@ -7,8 +7,7 @@ import axios from "axios";
 import { EnrolledCourse } from "@/types/student/EnrolledCourse";
 import { formatTimeRange } from "@/utils/date";
 import { dayColors } from "@/types/Color";
-import { useQuery } from '@tanstack/react-query';
-
+import { useQuery } from "@tanstack/react-query";
 
 const dayMap: Record<string, string> = {
   M: "Monday",
@@ -46,7 +45,7 @@ const getCourseColor = (courseId: number) => {
   return courseColorMap.get(key)!;
 };
 
-const hours = Array.from({ length: 10 }, (_, i) => 8 + i); // 08:00 - 17:00
+const hours = Array.from({ length: 13 }, (_, i) => 8 + i); // 08:00 - 17:00
 
 interface Props {
   studentID: string;
@@ -54,7 +53,7 @@ interface Props {
 
 const StudentClassSchedule: React.FC<Props> = ({ studentID }) => {
   const { data: courses = [] } = useQuery({
-    queryKey: ['student-enrollments', studentID],
+    queryKey: ["student-enrollments", studentID],
     queryFn: async () => {
       const res = await axios.get<EnrolledCourse[]>(
         `/api/students/enrollments/${studentID}`
@@ -76,9 +75,9 @@ const StudentClassSchedule: React.FC<Props> = ({ studentID }) => {
 
         <div className="mt-4 overflow-x-auto">
           <div
-            className="grid grid-cols-[120px_repeat(10,1fr)] min-w-[1200px] rounded-lg overflow-hidden"
+            className="grid grid-cols-[90px_repeat(13,1fr)] rounded-lg overflow-hidden"
             style={{
-              gridTemplateColumns: `120px repeat(${hours.length}, 1fr)`,
+              gridTemplateColumns: `90px repeat(${hours.length}, 1fr)`,
             }}
           >
             {/* Header */}
@@ -86,8 +85,9 @@ const StudentClassSchedule: React.FC<Props> = ({ studentID }) => {
             {hours.map((h, i) => (
               <div
                 key={h}
-                className={`p-2 text-center text-sm whitespace-nowrap ${i > 0 ? "border-l" : ""
-                  } border-gray-400`}
+                className={`p-2 text-center text-sm whitespace-nowrap ${
+                  i > 0 ? "border-l" : ""
+                } border-gray-400`}
               >
                 {h.toString().padStart(2, "0")}:00
               </div>
@@ -97,24 +97,28 @@ const StudentClassSchedule: React.FC<Props> = ({ studentID }) => {
             {Object.entries(dayMap).map(([abbr, full]) => (
               <React.Fragment key={abbr}>
                 <div
-                  className="bg-slate-700 p-2 font-semibold flex flex-col items-center justify-center"
-                  style={{ color: dayColors[abbr] }}
+                  className="bg-slate-700 p-2 font-semibold flex flex-col items-center justify-center w-22"
+                  style={{ color: dayColors[abbr], minWidth: "90px" }}
                 >
                   {full}
                 </div>
 
-                <div className="col-span-10 relative border-l border-gray-400 border-t h-24 text-center">
+                <div className="col-span-13 relative border-l border-gray-400 border-t h-24 text-center">
                   {courses
                     .filter((c) => c.days.includes(abbr))
                     .map((course) => {
-                      const startHour = parseInt(course.start_time.substring(0, 2));
-                      const startMin = parseInt(course.start_time.substring(2, 4));
+                      const startHour = parseInt(
+                        course.start_time.substring(0, 2)
+                      );
+                      const startMin = parseInt(
+                        course.start_time.substring(2, 4)
+                      );
                       const endHour = parseInt(course.end_time.substring(0, 2));
                       const endMin = parseInt(course.end_time.substring(2, 4));
 
                       const start = (startHour - 8) * 60 + startMin;
                       const end = (endHour - 8) * 60 + endMin;
-                      const total = 10 * 60;
+                      const total = 13 * 60;
                       const left = `${(start / total) * 100}%`;
                       const width = `${((end - start) / total) * 100}%`;
 
@@ -125,18 +129,23 @@ const StudentClassSchedule: React.FC<Props> = ({ studentID }) => {
                           style={{
                             left,
                             width,
-                            backgroundColor: getCourseColor(course.id),
+                            backgroundColor: getCourseColor(course.id) + "99",
                           }}
                         >
-                          <div className="font-bold w-full text-center text-[16px] truncate">
+                          <div className="font-bold w-full text-center text-[12px] truncate">
                             {course.course_code}
                           </div>
-                          <div className="w-full text-center truncate">{course.course_name}</div>
-                          <div className="w-full text-center truncate">
+                          <div className="font-bold w-full text-[10px] text-center truncate">
+                            {course.course_name}
+                          </div>
+                          <div className="w-full text-[10px] text-center truncate">
                             {course.lec_section} | Room {course.room || "-"}
                           </div>
-                          <div className="w-full text-center truncate">
-                            {formatTimeRange(course.start_time, course.end_time)}
+                          <div className="w-full text-[10px] text-center truncate">
+                            {formatTimeRange(
+                              course.start_time,
+                              course.end_time
+                            )}
                           </div>
                         </div>
                       );
@@ -146,7 +155,6 @@ const StudentClassSchedule: React.FC<Props> = ({ studentID }) => {
             ))}
           </div>
         </div>
-
       </div>
       <div className="flex justify-end px-4 py-2 rounded-b-md">
         <ExportButton
