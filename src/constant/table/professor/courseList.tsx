@@ -52,15 +52,13 @@ export const getColumns = (): TableProps<TeachingCourse>["columns"] => [
     title: "",
     key: "edit",
     width: 160,
-    render: (_: any, record: TeachingCourse) => (
-      <ExamModal record={record} />
-    ),
+    render: (_, record: TeachingCourse) => <ExamModal record={record} />,
   },
   {
     title: "",
     key: "view",
     width: 150,
-    render: (_: any, record: TeachingCourse) => (
+    render: (_, record: TeachingCourse) => (
       <Link
         href={{
           pathname: `/dashboard/professor/view_students`,
@@ -76,4 +74,3 @@ export const getColumns = (): TableProps<TeachingCourse>["columns"] => [
     ),
   },
 ];
-
