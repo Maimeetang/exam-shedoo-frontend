@@ -55,7 +55,7 @@ export default function ImportCourseContent({
         type="number"
         className="!w-30"
         value={scrapeCourseJobInput.start}
-        disabled={isLoading || status !== "waiting"}
+        // disabled={isLoading || status !== "waiting"}
         onChange={(e) =>
           setScrapeCourseJobInput({
             ...scrapeCourseJobInput,
@@ -68,7 +68,7 @@ export default function ImportCourseContent({
         type="number"
         className="!w-30"
         value={scrapeCourseJobInput.end}
-        disabled={isLoading || status !== "waiting"}
+        // disabled={isLoading || status !== "waiting"}
         onChange={(e) =>
           setScrapeCourseJobInput({
             ...scrapeCourseJobInput,
@@ -80,7 +80,7 @@ export default function ImportCourseContent({
       <Select
         className="!w-16 !text-center"
         value={scrapeCourseJobInput.workers}
-        disabled={isLoading || status !== "waiting"}
+        // disabled={isLoading || status !== "waiting"}
         onChange={(value) =>
           setScrapeCourseJobInput({
             ...scrapeCourseJobInput,
@@ -94,12 +94,12 @@ export default function ImportCourseContent({
       <Button
         className="!w-24"
         onClick={() => createScrapeCourseJob()}
-        disabled={
-          isLoading ||
-          status !== "waiting" ||
-          !scrapeCourseJobInput.start ||
-          !scrapeCourseJobInput.end
-        }
+        // disabled={
+        //   isLoading ||
+        //   status !== "waiting" ||
+        //   !scrapeCourseJobInput.start ||
+        //   !scrapeCourseJobInput.end
+        // }
         loading={isLoading}
       >
         Start

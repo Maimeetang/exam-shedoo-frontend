@@ -49,8 +49,9 @@ export default function ImportExamContent({
         type="number"
         placeholder="168"
         className="!w-20"
+        min={0}
         value={academicYear}
-        disabled={isLoading || status !== "waiting"}
+        // disabled={isLoading || status !== "waiting"}
         onChange={(e) => setAcademicYear(e.target.value)}
       />
       <span className="block text-xs text-gray-400">
@@ -60,8 +61,8 @@ export default function ImportExamContent({
         className="!w-24"
         disabled={
           isLoading ||
-          status !== "waiting" ||
-          prevTaskStatus !== "completed" ||
+          // status !== "waiting" ||
+          // prevTaskStatus !== "completed" ||
           !academicYear
         }
         loading={isLoading}

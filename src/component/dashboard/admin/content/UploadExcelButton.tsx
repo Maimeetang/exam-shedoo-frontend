@@ -47,11 +47,11 @@ const UploadExcelButton = ({ status, prevTaskStatus, setStatus }: prop) => {
   return (
     <Upload
       {...props}
-      disabled={status !== "waiting" || prevTaskStatus !== "completed"}
+    // disabled={status !== "waiting" || prevTaskStatus !== "completed"}
     >
       <Button
         icon={<UploadOutlined />}
-        disabled={status !== "waiting" || prevTaskStatus !== "completed"}
+      // disabled={status !== "waiting" || prevTaskStatus !== "completed"}
       >
         Click to Upload
       </Button>

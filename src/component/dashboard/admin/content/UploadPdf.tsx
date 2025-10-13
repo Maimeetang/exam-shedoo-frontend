@@ -70,7 +70,7 @@ const UploadPdf = ({ status, prevTaskStatus, setStatus }: prop) => {
       <Upload {...props} disabled={status !== "waiting"}>
         <Button
           icon={<UploadOutlined />}
-          disabled={status !== "waiting" || prevTaskStatus !== "completed"}
+        // disabled={status !== "waiting" || prevTaskStatus !== "completed"}
         >
           Click to Upload
         </Button>
