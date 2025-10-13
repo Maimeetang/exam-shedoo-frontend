@@ -15,7 +15,6 @@ const StudentDashboard: React.FC = () => {
   const { profile, error } = useProfile();
   const [term, setTerm] = useState<Term>({ semester: "", year: "" });
 
-
   if (error) {
     return <div className="p-3">Error: {error.message}</div>;
   }
@@ -34,9 +33,11 @@ const StudentDashboard: React.FC = () => {
           Academic Year {term.semester}/{term.year}
         </h1>
         <StudentCourseList studentID={profile.student_id} setTerm={setTerm} />
-        <StudentClassSchedule studentID={profile.student_id} />
-        <StudentExamSchedule studentId={profile.student_id} type="midterm" />
-        <StudentExamSchedule studentId={profile.student_id} type="final" />
+        <div className="w-full flex flex-col items-center gap-12">
+          <StudentClassSchedule studentID={profile.student_id} />
+          <StudentExamSchedule studentId={profile.student_id} type="midterm" />
+          <StudentExamSchedule studentId={profile.student_id} type="final" />
+        </div>
       </Content>
 
       <Footer style={{ textAlign: "center" }}>

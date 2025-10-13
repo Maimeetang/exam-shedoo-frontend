@@ -370,12 +370,7 @@ const ScheduleTable: React.FC<Props> = ({
                       return (
                         <div
                           key={`exam-${dateIdx}-${slotIdx}`}
-                          className={`
-    absolute left-1 right-1 text-xs p-2 text-[#303030] shadow 
-    flex flex-col items-center justify-center overflow-hidden cursor-pointer
-    transition-all duration-150 ease-in-out
-    z-[${slotIdx}] hover:z-[9999]
-  `}
+                          className={`absolute left-1 right-1 text-xs p-2 text-[#303030] shadow flex flex-col items-center justify-center overflow-hidden cursor-pointer transition-all duration-150 ease-in-out z-[${slotIdx}] hover:z-[9999]`}
                           style={{
                             top: startY,
                             height,
