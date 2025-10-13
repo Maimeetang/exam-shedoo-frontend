@@ -147,6 +147,23 @@ const ScheduleTable: React.FC<Props> = ({
     return arr;
   }, [mergedSlots]);
 
+  const hoursRange = useMemo(() => {
+    const hours = mergedSlots.map((s) => {
+      const startH = parseInt(s.start_time.slice(0, 2), 10);
+      const endH = parseInt(s.end_time.slice(0, 2), 10);
+      return [startH, endH];
+    });
+
+    let minHour = 8;
+    let maxHour = 19;
+
+    hours.forEach(([start, end]) => {
+      if (start < minHour) minHour = start;
+      if (end > maxHour) maxHour = end;
+    });
+
+    return { minHour, maxHour };
+  }, [mergedSlots]);
 
   const formatDateForHeader = (dateStr: string) => {
     const d = parseDate(dateStr);
@@ -234,13 +251,15 @@ const ScheduleTable: React.FC<Props> = ({
       </div>
 
       <div className="overflow-x-auto">
-        <div className="inline-block min-w-full relative max-h-[80vh]">
+        <div className="inline-block min-w-full relative">
           {/* Grid layout: hours on Y axis, dates on X axis */}
           <div
             className="grid"
             style={{
               gridTemplateColumns: `80px repeat(${dates.length}, minmax(160px, 1fr))`,
-              gridTemplateRows: `repeat(25, 80px)`, // 24 hours
+              gridTemplateRows: `repeat(${
+                hoursRange.maxHour - hoursRange.minHour + 2
+              }, 80px)`, // 24 hours
             }}
           >
             {/* Top-left cell: Time header */}
@@ -272,32 +291,41 @@ const ScheduleTable: React.FC<Props> = ({
               );
             })}
             {/* Time column */}
-            {Array.from({ length: 24 }).map((_, hour) => (
-              <div
-                key={`time-${hour}`}
-                className="border-b border-gray-200 border-r flex items-start justify-center text-sm text-gray-600 pt-1"
-                style={{
-                  gridColumn: 1,
-                  gridRow: hour + 2,
-                }}
-              >
-                {hour.toString().padStart(2, "0")}:00
-              </div>
-            ))}
-
+            {Array.from({
+              length: hoursRange.maxHour - hoursRange.minHour + 1,
+            }).map((_, idx) => {
+              const hour = hoursRange.minHour + idx;
+              return (
+                <div
+                  key={`time-${hour}`}
+                  className="border-b border-gray-200 border-r flex items-start justify-center text-sm text-gray-600 pt-1"
+                  style={{
+                    gridColumn: 1,
+                    gridRow: idx + 2,
+                  }}
+                >
+                  {hour.toString().padStart(2, "0")}:00
+                </div>
+              );
+            })}
 
             {/* Time grid cells */}
             {dates.map((_, dateIdx) =>
-              Array.from({ length: 24 }).map((_, hour) => (
-                <div
-                  key={`cell-${dateIdx}-${hour}`}
-                  className="border-b border-r border-gray-100 relative"
-                  style={{
-                    gridColumn: dateIdx + 2,
-                    gridRow: hour + 2,
-                  }}
-                ></div>
-              ))
+              Array.from({
+                length: hoursRange.maxHour - hoursRange.minHour + 1,
+              }).map((_, idx) => {
+                const hour = hoursRange.minHour + idx;
+                return (
+                  <div
+                    key={`cell-${dateIdx}-${hour}`}
+                    className="border-b border-r border-gray-100 relative"
+                    style={{
+                      gridColumn: dateIdx + 2,
+                      gridRow: idx + 2,
+                    }}
+                  ></div>
+                );
+              })
             )}
           </div>
 
@@ -308,12 +336,15 @@ const ScheduleTable: React.FC<Props> = ({
               style={{
                 gridTemplateColumns: `repeat(${dates.length}, minmax(160px, 1fr))`,
                 position: "relative",
-                height: "1920px",
+                height: `${
+                  (hoursRange.maxHour - hoursRange.minHour + 1) * 80 + 80
+                }px`,
               }}
             >
               {dates.map((date, dateIdx) => {
                 const dailySlots = mergedSlots.filter(
-                  (s) => parseDate(s.date).getTime() === parseDate(date).getTime()
+                  (s) =>
+                    parseDate(s.date).getTime() === parseDate(date).getTime()
                 );
 
                 return (
@@ -326,8 +357,12 @@ const ScheduleTable: React.FC<Props> = ({
 
                       // Convert time to Y position (pixels)
                       const HEADER_HEIGHT = 80;
-                      const startY = HEADER_HEIGHT + (startH + startM / 60) * 80;
-                      const endY = HEADER_HEIGHT + (endH + endM / 60) * 80;
+                      const startY =
+                        HEADER_HEIGHT +
+                        (startH - hoursRange.minHour + startM / 60) * 80;
+                      const endY =
+                        HEADER_HEIGHT +
+                        (endH - hoursRange.minHour + endM / 60) * 80;
                       const height = Math.max(endY - startY, 40);
 
                       const count = getTotalStudents(slot);
@@ -347,14 +382,21 @@ const ScheduleTable: React.FC<Props> = ({
                             backgroundColor: getStudentBgColor(count) + "99",
                           }}
                           onMouseEnter={(e) => {
-                            (e.currentTarget as HTMLDivElement).style.backgroundColor = getStudentBgColor(count);
+                            (
+                              e.currentTarget as HTMLDivElement
+                            ).style.backgroundColor = getStudentBgColor(count);
                           }}
                           onMouseLeave={(e) => {
-                            (e.currentTarget as HTMLDivElement).style.backgroundColor = getStudentBgColor(count) + "99";
+                            (
+                              e.currentTarget as HTMLDivElement
+                            ).style.backgroundColor =
+                              getStudentBgColor(count) + "99";
                           }}
                           onClick={() => handleCellClick(slot)}
                         >
-                          <div className="font-bold text-[16px] mt-1">{count} students</div>
+                          <div className="font-bold text-[16px] mt-1">
+                            {count} students
+                          </div>
                           <div className="text-[14px]">{`${slot.start_time}-${slot.end_time}`}</div>
                         </div>
                       );
@@ -380,13 +422,23 @@ const ScheduleTable: React.FC<Props> = ({
               {selectedSlot.end_time}
             </div>
             <Table
-              dataSource={getMergedCourses(selectedSlot.courses).map((c, idx) => ({
-                key: `${c.course_id}-${idx}`,
-                ...c,
-              }))}
+              dataSource={getMergedCourses(selectedSlot.courses).map(
+                (c, idx) => ({
+                  key: `${c.course_id}-${idx}`,
+                  ...c,
+                })
+              )}
               columns={[
-                { title: "Course ID", dataIndex: "course_id", key: "course_id" },
-                { title: "Course Name", dataIndex: "course_name", key: "course_name" },
+                {
+                  title: "Course ID",
+                  dataIndex: "course_id",
+                  key: "course_id",
+                },
+                {
+                  title: "Course Name",
+                  dataIndex: "course_name",
+                  key: "course_name",
+                },
                 {
                   title: "Students",
                   key: "students",
@@ -401,7 +453,6 @@ const ScheduleTable: React.FC<Props> = ({
       </Modal>
     </div>
   );
-
 };
 
 export default ScheduleTable;
