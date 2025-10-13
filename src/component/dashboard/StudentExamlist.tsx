@@ -102,11 +102,13 @@ const StudentExamSchedule: React.FC<Props> = ({
 
   const filtered = useMemo(
     () =>
-      exams.filter((e) =>
-        type === "midterm"
-          ? e.midterm_date && e.midterm_start_time && e.midterm_end_time
-          : e.final_date && e.final_start_time && e.final_end_time
-      ),
+      Array.isArray(exams)
+        ? exams.filter((e) =>
+            type === "midterm"
+              ? e.midterm_date && e.midterm_start_time && e.midterm_end_time
+              : e.final_date && e.final_start_time && e.final_end_time
+          )
+        : [],
     [exams, type]
   );
 

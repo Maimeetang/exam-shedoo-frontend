@@ -67,7 +67,7 @@ const StudentClassSchedule: React.FC<Props> = ({ studentID }) => {
   const tableRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="w-full max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+    <div className="w-full max-w-[85rem] mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
       <div ref={tableRef}>
         <div className="bg-[#AD92B2] px-4 py-5">
           <h2 className="text-white text-2xl font-semibold">ClassSchedule</h2>
