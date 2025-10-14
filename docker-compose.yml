@@ -1,0 +1,15 @@
+name: shedoo-frontend
+services:
+  frontend:
+    container_name: shedoo-frontend
+    image: shedoo-frontend:latest
+    ports:
+      - "${PORT}:3000"
+    environment:
+      CMU_ENTRAID_URL: ${CMU_ENTRAID_URL}
+      NEXT_PROXY: ${NEXT_PROXY}
+    networks:
+      - shedoo-backend_default
+networks:
+  shedoo-backend_default:
+    external: true
