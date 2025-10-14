@@ -8,6 +8,7 @@ import {
   Status,
 } from "@/types/admin/ScrapeJob";
 import axios from "axios";
+import { endOfDay } from "date-fns";
 const { Option } = Select;
 
 interface prop {
@@ -30,10 +31,11 @@ export default function ImportCourseContent({
   function createScrapeCourseJob() {
     setIsLoading(true);
     axios
-      .post<PostJobResponse>(
-        "/api/admin/scrape/course/start",
-        scrapeCourseJobInput
-      )
+      .post<PostJobResponse>("/api/admin/scrape/course/start", {
+        start: scrapeCourseJobInput.start,
+        end: scrapeCourseJobInput.end,
+        workers: Number(scrapeCourseJobInput.workers),
+      })
       .then((res) => {
         if (res.data) {
           setID(res.data.job_id);
@@ -46,6 +48,7 @@ export default function ImportCourseContent({
       .finally(() => {
         setIsLoading(false);
       });
+    console.log(scrapeCourseJobInput);
   }
 
   return (
@@ -89,6 +92,7 @@ export default function ImportCourseContent({
         }
       >
         <Option value="4">4</Option>
+        <Option value="6">6</Option>
         <Option value="8">8</Option>
       </Select>
       <Button
