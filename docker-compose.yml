@@ -2,6 +2,7 @@ name: shedoo-frontend
 services:
   frontend:
     container_name: shedoo-frontend
+    build: .
     image: shedoo-frontend:latest
     ports:
       - "${PORT}:3000"
