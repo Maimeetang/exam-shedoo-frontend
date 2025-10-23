@@ -8,7 +8,6 @@ import {
   Status,
 } from "@/types/admin/ScrapeJob";
 import axios from "axios";
-import { endOfDay } from "date-fns";
 const { Option } = Select;
 
 interface prop {
@@ -43,6 +42,7 @@ export default function ImportCourseContent({
         }
       })
       .catch((err) => {
+        setStatus("failed");
         setError(err.message || "Something went wrong");
       })
       .finally(() => {
@@ -58,7 +58,7 @@ export default function ImportCourseContent({
         type="number"
         className="!w-30"
         value={scrapeCourseJobInput.start}
-        // disabled={isLoading || status !== "waiting"}
+        disabled={isLoading || (status !== "waiting" && status !== "failed")}
         onChange={(e) =>
           setScrapeCourseJobInput({
             ...scrapeCourseJobInput,
@@ -71,7 +71,7 @@ export default function ImportCourseContent({
         type="number"
         className="!w-30"
         value={scrapeCourseJobInput.end}
-        // disabled={isLoading || status !== "waiting"}
+        disabled={isLoading || (status !== "waiting" && status !== "failed")}
         onChange={(e) =>
           setScrapeCourseJobInput({
             ...scrapeCourseJobInput,
@@ -83,7 +83,7 @@ export default function ImportCourseContent({
       <Select
         className="!w-16 !text-center"
         value={scrapeCourseJobInput.workers}
-        // disabled={isLoading || status !== "waiting"}
+        disabled={isLoading || (status !== "waiting" && status !== "failed")}
         onChange={(value) =>
           setScrapeCourseJobInput({
             ...scrapeCourseJobInput,
@@ -98,12 +98,12 @@ export default function ImportCourseContent({
       <Button
         className="!w-24"
         onClick={() => createScrapeCourseJob()}
-        // disabled={
-        //   isLoading ||
-        //   status !== "waiting" ||
-        //   !scrapeCourseJobInput.start ||
-        //   !scrapeCourseJobInput.end
-        // }
+        disabled={
+          isLoading ||
+          (status !== "waiting" && status !== "failed") ||
+          !scrapeCourseJobInput.start ||
+          !scrapeCourseJobInput.end
+        }
         loading={isLoading}
       >
         Start

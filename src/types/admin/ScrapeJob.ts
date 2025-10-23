@@ -1,4 +1,4 @@
-export type Status = "waiting" | "pending" | "running" | "completed";
+export type Status = "waiting" | "pending" | "running" | "completed" | "failed";
 
 export interface ScrapeCourseJobInput {
   start: string;

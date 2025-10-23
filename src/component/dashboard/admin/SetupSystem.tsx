@@ -7,6 +7,7 @@ import ImportExamContent from "./content/ImportExam";
 import { Status } from "@/types/admin/ScrapeJob";
 import UploadExcelButton from "./content/UploadExcelButton";
 import UploadPdf from "./content/UploadPdf";
+import DeleteDatabaseButton from "./content/ResetDatabase";
 
 const { Text } = Typography;
 
@@ -49,6 +50,8 @@ export default function AdminDashboard({ setError }: Prop) {
 
   const [uploadExcelStatus, setUploadExcelStatus] = useState<Status>("waiting");
   const [uploadPdfStatus, setUploadPdfStatus] = useState<Status>("waiting");
+
+  const [resetDatabaseStatus, setResetDatabaseStatus] = useState<Status>("waiting");
 
   useEffect(() => {
     if (!scrapeCourseJobID) return;
@@ -177,6 +180,27 @@ export default function AdminDashboard({ setError }: Prop) {
       ),
       status: (
         <Tag color={getStatusColor(uploadPdfStatus)}>{uploadPdfStatus}</Tag>
+      ),
+    },
+    {
+      key: "5",
+      job: (
+        <div className="text-red-500">
+          Reset Database<br />
+        </div>
+      ),
+      content: (
+        <div className="flex flex-row gap-2 items-center justify-end">
+          <DeleteDatabaseButton
+            status={resetDatabaseStatus}
+            setStatus={setResetDatabaseStatus}
+          />
+        </div>
+      ),
+      status: (
+        <Tag color={getStatusColor(resetDatabaseStatus)}>
+          {resetDatabaseStatus}
+        </Tag>
       ),
     },
   ];

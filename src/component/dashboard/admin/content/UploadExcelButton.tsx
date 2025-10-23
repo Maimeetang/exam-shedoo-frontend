@@ -24,13 +24,11 @@ const UploadExcelButton = ({ status, prevTaskStatus, setStatus }: prop) => {
       return isExcel || Upload.LIST_IGNORE; // ถ้าไม่ใช่ .xlsx จะไม่ถูกเพิ่มใน list และไม่อัปโหลด
     },
     onChange(info) {
-      if (info.file.status !== "uploading") {
-        setStatus("running");
-      }
       if (info.file.status === "done") {
         setStatus("completed");
         message.success(`${info.file.response.message}`);
       } else if (info.file.status === "error") {
+        setStatus("failed");
         message.error(`${info.file.name} file upload failed.`);
       }
     },
@@ -47,11 +45,12 @@ const UploadExcelButton = ({ status, prevTaskStatus, setStatus }: prop) => {
   return (
     <Upload
       {...props}
-    // disabled={status !== "waiting" || prevTaskStatus !== "completed"}
+      disabled={(status !== "waiting" && status !== "failed")}
+
     >
       <Button
         icon={<UploadOutlined />}
-      // disabled={status !== "waiting" || prevTaskStatus !== "completed"}
+        disabled={(status !== "waiting" && status !== "failed")}
       >
         Click to Upload
       </Button>

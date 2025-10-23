@@ -38,6 +38,7 @@ const UploadPdf = ({ status, prevTaskStatus, setStatus }: prop) => {
     } catch (err: unknown) {
       if (err instanceof Error) {
         onError?.(err);
+        setStatus("failed");
         message.error(`${(file as RcFile).name} upload failed`);
       } else {
         message.error("Something went wrong");
@@ -67,10 +68,10 @@ const UploadPdf = ({ status, prevTaskStatus, setStatus }: prop) => {
         <Option value="MIDTERM">Midterm</Option>
         <Option value="FINAL">Final</Option>
       </Select>
-      <Upload {...props} disabled={status !== "waiting"}>
+      <Upload {...props} disabled={status !== "waiting" && status !== "failed"}>
         <Button
           icon={<UploadOutlined />}
-        // disabled={status !== "waiting" || prevTaskStatus !== "completed"}
+          disabled={(status !== "waiting" && status !== "failed")}
         >
           Click to Upload
         </Button>
