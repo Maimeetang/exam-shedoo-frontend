@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export default function Login() {
-  const CmuentraidURL = process.env.CMU_ENTRAID_URL as string;
+  const CmuentraidURL = process.env.NEXT_PUBLIC_CMU_ENTRAID_URL as string;
 
   return (
     <div className="flex items-center justify-center h-screen bg-[url(/background/login.png)] bg-cover bg-center">
