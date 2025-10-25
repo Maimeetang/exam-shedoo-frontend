@@ -2,8 +2,9 @@
 FROM node:22-alpine AS builder
 RUN corepack enable
 WORKDIR /app
-COPY . .
+COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --no-frozen-lockfile
+COPY . .
 RUN pnpm run build
 
 # Stage 2 — Production
