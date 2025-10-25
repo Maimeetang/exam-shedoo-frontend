@@ -14,7 +14,7 @@ interface prop {
   setStatus: (status: Status) => void;
 }
 
-const UploadPdf = ({ status, prevTaskStatus, setStatus }: prop) => {
+const UploadPdf = ({ status, setStatus }: prop) => {
   const [examType, setExamType] = useState<"MIDTERM" | "FINAL">("MIDTERM");
 
   const customRequest = async (options: RcCustomRequestOptions) => {

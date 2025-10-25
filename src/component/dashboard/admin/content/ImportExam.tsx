@@ -15,7 +15,6 @@ interface prop {
 
 export default function ImportExamContent({
   status,
-  prevTaskStatus,
   setError,
   setID,
   setStatus,

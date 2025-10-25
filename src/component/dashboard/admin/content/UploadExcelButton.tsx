@@ -10,7 +10,7 @@ interface prop {
   setStatus: (status: Status) => void;
 }
 
-const UploadExcelButton = ({ status, prevTaskStatus, setStatus }: prop) => {
+const UploadExcelButton = ({ status, setStatus }: prop) => {
   const props: UploadProps = {
     name: "file",
     action: "/api/admin/enrollments/upload",

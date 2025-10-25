@@ -26,9 +26,9 @@ const DeleteDatabaseButton = ({ status, setStatus }: Props) => {
       setStatus("completed");
       setIsModalOpen(false);
       setConfirmationText("");
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      message.error(error.response?.data?.message || "Failed to delete database");
+      message.error("Failed to delete database");
       setStatus("failed");
     } finally {
       setLoading(false);
@@ -68,7 +68,7 @@ const DeleteDatabaseButton = ({ status, setStatus }: Props) => {
       >
         <p>
           This action will permanently delete <b>all data</b> except admin from the database.
-          Please type "<code>reset database</code>" to confirm.
+          Please type <b>reset database</b> to confirm.
         </p>
         <Input
           placeholder={`Type ${VERIFY_TEXT} to confirm`}
