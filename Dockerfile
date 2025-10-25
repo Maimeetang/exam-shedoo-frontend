@@ -1,14 +1,15 @@
-# Stage 1: Build
-FROM node:20-alpine AS builder
+# Stage 1 — Build
+FROM node:22-alpine AS builder
+RUN corepack enable
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm install
 COPY . .
-RUN npm run build
+RUN pnpm install --frozen-lockfile
+RUN pnpm run build
 
-# Stage 2: Production
-FROM node:20-alpine
+# Stage 2 — Production
+FROM node:22-alpine
 WORKDIR /app
 COPY --from=builder /app ./
 EXPOSE 3000
-CMD ["npm", "run", "start"]
+CMD ["pnpm", "run", "start"]
+
