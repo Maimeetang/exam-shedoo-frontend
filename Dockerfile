@@ -3,7 +3,7 @@ FROM node:22-alpine AS builder
 RUN corepack enable
 WORKDIR /app
 COPY . .
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 RUN pnpm run build
 
 # Stage 2 — Production
