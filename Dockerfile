@@ -21,7 +21,9 @@ FROM node:22-alpine
 WORKDIR /app
 
 # Copy built project from builder
-COPY --from=builder /app ./
+COPY --from=builder /app/.next .next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package*.json ./
 
 # Expose the port
 EXPOSE 3000
