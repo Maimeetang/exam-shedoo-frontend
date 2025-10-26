@@ -1,11 +1,7 @@
-import getConfig from "next/config";
 import Link from "next/link";
 
-export const dynamic = "force-dynamic";
-
 export default function Login() {
-  const { publicRuntimeConfig } = getConfig();
-  const url = publicRuntimeConfig.CMU_ENTRAID_URL as string;
+  const CMU_ENTRAID_URL = process.env.NEXT_PUBLIC_CMU_ENTRAID_URL;
 
   return (
     <div className="flex items-center justify-center h-screen bg-[url(/background/login.png)] bg-cover bg-center">
@@ -20,7 +16,7 @@ export default function Login() {
                 sign in or create account to get started
               </p>
             </div>
-            <Link href={`${url}`}>
+            <Link href={`${CMU_ENTRAID_URL}`}>
               <button className="mt-10 cursor-pointer">
                 <img className="w-72" src="/buttons/cmu-login.png" alt="icon" />
               </button>

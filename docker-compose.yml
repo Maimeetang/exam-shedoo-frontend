@@ -7,7 +7,7 @@ services:
     ports:
       - "${PORT}:3000"
     environment:
-      CMU_ENTRAID_URL: ${CMU_ENTRAID_URL}
+      NEXT_PUBLIC_CMU_ENTRAID_URL: ${NEXT_PUBLIC_CMU_ENTRAID_URL}
       NEXT_PROXY: ${NEXT_PROXY}
     networks:
       - shedoo-backend_default
